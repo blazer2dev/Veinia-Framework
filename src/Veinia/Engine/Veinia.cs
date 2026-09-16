@@ -52,8 +52,8 @@ namespace VeiniaFramework
 			Globals.camera = new Camera(new DensityViewport(graphicsDevice, window, 1920, 1080));
 			Globals.physicsWorld = new World(gravity ?? new Vector2(0, -9.81f));
 			Globals.shapeDrawing = new ShapeDrawing(graphicsDevice);
-			Globals.frustumCulling = new FrustumCulling();
 
+			ServiceManager.Append(new FrustumCulling());
 
 			window.ClientSizeChanged += (s, a) => screen.ClientSizeChanged();
 
@@ -93,8 +93,6 @@ namespace VeiniaFramework
 			Timers.Update();
 
 			Globals.unscaledTweener.Update(Time.unscaledDeltaTime);
-
-			Globals.frustumCulling.Update();
 
 			ServiceManager.Update();
 
