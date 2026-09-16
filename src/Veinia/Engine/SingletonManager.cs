@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 
-public class ServiceManager
+public class SingletonManager
 {
-    private static List<IService> services = new List<IService>();
+    private static List<ISingleton> services = new List<ISingleton>();
 
-    public static T1 Fetch<T1>() where T1 : IService
+    public static T1 Fetch<T1>() where T1 : ISingleton
     {
         T1 result = default;
         foreach (var item in services)
@@ -13,7 +13,7 @@ public class ServiceManager
         return result;
     }
 
-    public static void Append(IService service) => services.Add(service);
+    public static void Append(ISingleton service) => services.Add(service);
 
     public static void Update()
     {

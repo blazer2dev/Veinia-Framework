@@ -94,10 +94,6 @@ namespace VeiniaFramework
 
 			Globals.unscaledTweener.Update(Time.unscaledDeltaTime);
 
-			Globals.frustumCulling.Update();
-
-			ServiceManager.Update();
-
 			Time.Update(gameTime);
 
 			if (!isEditor && !PausedGameWhenInactiveWindow && !Time.stop
@@ -105,8 +101,10 @@ namespace VeiniaFramework
 			{
 				if (game.IsActive) Globals.input.Update();
 
-				Globals.tweener.Update(Time.deltaTime);
+				SingletonManager.Update();
 
+				Globals.tweener.Update(Time.deltaTime);
+				Globals.frustumCulling.Update();
 
 				var level = Globals.loader.current;
 				if (level != null)
@@ -122,9 +120,9 @@ namespace VeiniaFramework
 
 				Globals.camera.shake.Update();
 				Globals.shapeDrawing.UpdateBasicEffect();
-			}
 
-			ServiceManager.LateUpdate();
+				SingletonManager.LateUpdate();
+			}
 
 			title.Update();
 			#endregion
