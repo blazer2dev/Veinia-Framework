@@ -1,6 +1,6 @@
 public interface IService
 {
-    void Initialize() { }
-    void Update() { }
-    void LateUpdate() { }
+    public void Initialize();
+    public void Update();
+    public void LateUpdate();
 }

@@ -2,11 +2,11 @@
 
 namespace VeiniaFramework
 {
-	public class FrustumCulling : IService
+	public class FrustumCulling
 	{
-		public bool autoCulling = true;
-		public float frustumCullTime = .25f;
-		public float frustumRatioToCamera = 2.5f;
+		public static bool autoCulling = true;
+		public static float frustumCullTime = .25f;
+		public static float frustumRatioToCamera = 2.5f;
 
 
 		public void Update()
@@ -18,7 +18,7 @@ namespace VeiniaFramework
 			}
 		}
 
-		public void Cull(Level level, float? frustumRatioToCameraOverride = null)
+		public static void Cull(Level level, float? frustumRatioToCameraOverride = null)
 		{
 			float scale = frustumRatioToCameraOverride == null ? frustumRatioToCamera : frustumRatioToCameraOverride.Value;
 

@@ -39,8 +39,7 @@ namespace VeiniaFramework
 				current.CreateScene();
 				current.InitializeComponentsFirstFrame();
 
-				var frustumCulling = ServiceManager.Fetch<FrustumCulling>();
-				if (frustumCulling.autoCulling) frustumCulling.Cull(current);
+				if (FrustumCulling.autoCulling) FrustumCulling.Cull(current);
 			};
 
 			if (Globals.physicsWorld.IsLocked) NextFrame.actions.Add(loadAction);
