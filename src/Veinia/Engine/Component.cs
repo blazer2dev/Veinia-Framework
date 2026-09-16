@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace VeiniaFramework
 {
-	public class Component : ICloneable, IActive
+	public class Component : ICloneable
 	{
 		[Browsable(false)] public GameObject gameObject;
 		[Browsable(false)] public Transform transform;

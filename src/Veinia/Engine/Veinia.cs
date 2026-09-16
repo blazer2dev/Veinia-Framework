@@ -51,8 +51,9 @@ namespace VeiniaFramework
 			Globals.screen = screen;
 			Globals.camera = new Camera(new DensityViewport(graphicsDevice, window, 1920, 1080));
 			Globals.physicsWorld = new World(gravity ?? new Vector2(0, -9.81f));
-			Globals.frustumCulling = new FrustumCulling();
 			Globals.shapeDrawing = new ShapeDrawing(graphicsDevice);
+			Globals.frustumCulling = new FrustumCulling();
+
 
 			window.ClientSizeChanged += (s, a) => screen.ClientSizeChanged();
 
@@ -95,6 +96,8 @@ namespace VeiniaFramework
 
 			Globals.frustumCulling.Update();
 
+			ServiceManager.Update();
+
 			Time.Update(gameTime);
 
 			if (!isEditor && !PausedGameWhenInactiveWindow && !Time.stop
@@ -120,6 +123,8 @@ namespace VeiniaFramework
 				Globals.camera.shake.Update();
 				Globals.shapeDrawing.UpdateBasicEffect();
 			}
+
+			ServiceManager.LateUpdate();
 
 			title.Update();
 			#endregion

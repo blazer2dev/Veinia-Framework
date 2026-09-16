@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace VeiniaFramework
 {
-	public class GameObject : IActive
+	public class GameObject
 	{
 		public List<Component> components;
 		[Browsable(false)] public Level level;

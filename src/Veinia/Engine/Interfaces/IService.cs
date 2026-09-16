@@ -1,6 +1,5 @@
-public interface IActive
+public interface IService
 {
-    public void EarlyInitialize();
     public void Initialize();
     public void Update();
     public void LateUpdate();
