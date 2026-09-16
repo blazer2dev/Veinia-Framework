@@ -12,8 +12,18 @@ public class SingletonManager
 
         return result;
     }
+    public static void Remove<T1>() where T1 : ISingleton
+    {
+        foreach (var item in services)
+            if (item is T1) services.Remove(item);
+    }
+    public static void Remove(ISingleton singleton) => services.Remove(singleton);
 
-    public static void Append(ISingleton service) => services.Add(service);
+    public static void Append(ISingleton service)
+    {
+        services.Add(service);
+        service.Initialize();
+    }
 
     public static void Update()
     {
