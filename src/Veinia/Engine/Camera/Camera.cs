@@ -235,34 +235,33 @@ namespace Apos.Camera
 			return Transform.ScreenToWorldPos(b - a);
 		}
 
-		public Vector2 GetCornerWorld(CornerLocation cornerLocation, float xPadding = 0, float yPadding = 0, bool useCameraScale = true, bool useCameraShake = false, bool useCameraPos = true)
+		public Vector2 GetCorner(CornerLocation cornerLocation, Vector2 padding = default, bool useCameraScale = true, bool useCameraShake = false, bool useCameraPos = true)
 		{
 			Vector2 cornerOffset = Vector2.Zero;
-
-			xPadding *= Transform.unitSize;
-			yPadding *= Transform.unitSize;
 
 			switch (cornerLocation)
 			{
 				case CornerLocation.TopLeft:
-					cornerOffset = new Vector2(VirtualViewport.TargetWidth / 2 - xPadding, VirtualViewport.TargetHeight / 2 - yPadding);
+					cornerOffset = new Vector2(VirtualViewport.TargetWidth / 2 - padding.X, VirtualViewport.TargetHeight / 2 - padding.Y);
 					break;
 				case CornerLocation.BottomLeft:
-					cornerOffset = new Vector2(VirtualViewport.TargetWidth / 2 - xPadding, -VirtualViewport.TargetHeight / 2 + yPadding);
+					cornerOffset = new Vector2(VirtualViewport.TargetWidth / 2 - padding.X, -VirtualViewport.TargetHeight / 2 + padding.Y);
 					break;
 				case CornerLocation.TopRight:
-					cornerOffset = new Vector2(-VirtualViewport.TargetWidth / 2 + xPadding, VirtualViewport.TargetHeight / 2 - yPadding);
+					cornerOffset = new Vector2(-VirtualViewport.TargetWidth / 2 + padding.X, VirtualViewport.TargetHeight / 2 - padding.Y);
 					break;
 				case CornerLocation.BottomRight:
-					cornerOffset = new Vector2(-VirtualViewport.TargetWidth / 2 + xPadding, -VirtualViewport.TargetHeight / 2 + yPadding);
+					cornerOffset = new Vector2(-VirtualViewport.TargetWidth / 2 + padding.X, -VirtualViewport.TargetHeight / 2 + padding.Y);
 					break;
 			}
 
 			var scale = useCameraScale ? Scale : 1;
 			if (useCameraShake) cornerOffset += shake.shakeOffset / scale;
 			var camPos = useCameraPos ? XY : Vector2.Zero;
-			return Transform.ScreenToWorldPos(camPos - cornerOffset * scale);
+			return camPos - cornerOffset * scale;
 		}
+		public Vector2 GetCornerWorld(CornerLocation cornerLocation, Vector2 padding = default, bool useCameraScale = true, bool useCameraShake = false, bool useCameraPos = true)
+			=> Transform.ScreenToWorldPos(GetCorner(cornerLocation, padding * Transform.unitSize, useCameraScale, useCameraShake, useCameraPos));
 
 		private Vector2 _xy = Vector2.Zero;
 		private Vector3 _xyz = new Vector3(Vector2.Zero, 1f);
