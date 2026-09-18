@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FontStashSharp;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
@@ -23,7 +24,7 @@ namespace VeiniaFramework
 		public static void VeiniaPointWorld(this SpriteBatch sb, Level level, Vector2 position, Color? color = null, float size = 10, DrawOptions drawOptions = default, float z = float.MaxValue)
 			=> VeiniaPoint(sb, level, Transform.WorldToScreenPos(position), color, size, drawOptions, z);
 
-		public static void VeiniaText(this SpriteBatch sb, Level level, Vector2 position, string text, Color? color = null, float size = .5f, SpriteFont font = null, DrawOptions drawOptions = default, float z = float.MaxValue)
+		public static void VeiniaText(this SpriteBatch sb, Level level, Vector2 position, string text, Color? color = null, float size = 32, SpriteFontBase font = null, DrawOptions drawOptions = default, float z = float.MaxValue)
 		{
 			color = color ?? Color.White;
 			if (text == null || text == string.Empty) return;
@@ -32,17 +33,17 @@ namespace VeiniaFramework
 			{
 				command = delegate
 				{
-					var spriteFont = font ?? Globals.content.Load<SpriteFont>("DiagnosticsFont");
-					var textSize = spriteFont.MeasureString(text);
+					var spriteFontBase = font ?? Globals.fontSystem.GetFont(size);
+					var textSize = spriteFontBase.MeasureString(text);
 					var origin = new Vector2(textSize.X / 2f, textSize.Y / 2.5f);
 
-					sb.DrawString(spriteFont, text, position, color.Value, 0f, origin, size, SpriteEffects.None, 0f);
+					sb.DrawString(spriteFontBase, text, position, color.Value, 0f, origin);
 				},
 				Z = z,
 				drawOptions = drawOptions,
 			});
 		}
-		public static void VeiniaTextWorld(this SpriteBatch sb, Level level, Vector2 position, string text, Color? color = null, float size = .5f, SpriteFont font = null, DrawOptions drawOptions = default, float z = float.MaxValue)
+		public static void VeiniaTextWorld(this SpriteBatch sb, Level level, Vector2 position, string text, Color? color = null, float size = 32, SpriteFontBase font = null, DrawOptions drawOptions = default, float z = float.MaxValue)
 			=> VeiniaText(sb, level, Transform.WorldToScreenPos(position), text, color, size, font, drawOptions, z);
 
 		public static void VeiniaLine(this SpriteBatch sb, Level level, Vector2 point1, Vector2 point2, Color? color = null, float thickness = 10, DrawOptions drawOptions = default, float z = float.MaxValue)

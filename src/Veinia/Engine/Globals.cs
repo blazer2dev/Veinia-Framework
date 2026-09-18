@@ -1,4 +1,5 @@
 ﻿using Apos.Camera;
+using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -6,6 +7,7 @@ using MonoGame.Extended.Tweening;
 using Myra.Graphics2D.UI;
 using nkast.Aether.Physics2D.Dynamics;
 using System;
+using System.ComponentModel;
 
 namespace VeiniaFramework
 {
@@ -18,6 +20,7 @@ namespace VeiniaFramework
 		public static Tweener unscaledTweener = new Tweener();
 		public static ParticleWorld particleWorld = new ParticleWorld();
 		public static Random random = new Random();
+		public static FontSystem fontSystem = new FontSystem();
 		public static Loader loader;
 		public static GraphicsDeviceManager graphicsManager;
 		public static GraphicsDevice graphicsDevice;

@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using nkast.Aether.Physics2D.Diagnostics;
 using nkast.Aether.Physics2D.Dynamics;
 using System;
+using System.IO;
 using VeiniaFramework.Editor;
 
 namespace VeiniaFramework
@@ -30,13 +31,7 @@ namespace VeiniaFramework
 			Globals.graphicsManager = graphicsManager;
 			Globals.fps = new FPS(game);
 
-			JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-			{
-				Converters =
-				{
-					new Vector2JSONConverter()
-				}
-			};
+			JsonConvert.DefaultSettings = () => new JsonSerializerSettings { Converters = { new Vector2JSONConverter() } };
 		}
 
 		public void Initialize(GraphicsDevice graphicsDevice, ContentManager content, GameWindow window,
@@ -53,6 +48,10 @@ namespace VeiniaFramework
 			Globals.physicsWorld = new World(gravity ?? new Vector2(0, -9.81f));
 			Globals.shapeDrawing = new ShapeDrawing(graphicsDevice);
 			Globals.frustumCulling = new FrustumCulling();
+
+
+			using var stream = TitleContainer.OpenStream(Path.Combine(content.RootDirectory, "veinia_defaults/arial_rounded.ttf"));
+			Globals.fontSystem.AddFont(stream);
 
 
 			window.ClientSizeChanged += (s, a) => screen.ClientSizeChanged();
