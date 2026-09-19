@@ -25,6 +25,7 @@ namespace VeiniaFramework.Editor
 
 		bool selectDragging;
 		public TextButton rotateButton; // determine if IsPressed
+		public TextButton scaleButton; // determine if IsPressed
 		public TextButton freeMoveButton; // determine if IsPressed
 
 		Vector2 startSelectionPos;
@@ -88,6 +89,9 @@ namespace VeiniaFramework.Editor
 
 			if (Globals.input.GetKeyDown(Keys.R) && !EditorControls.isTextBoxFocused)
 				rotateButton.IsPressed = !rotateButton.IsPressed;
+
+			if (Globals.input.GetKeyDown(Keys.T) && !EditorControls.isTextBoxFocused)
+				scaleButton.IsPressed = !scaleButton.IsPressed;
 
 			if (Globals.input.GetKeyDown(Keys.F) && !EditorControls.isTextBoxFocused) freeMoveButton.IsPressed = !freeMoveButton.IsPressed;
 			if (freeMoveButton.IsPressed)
@@ -171,7 +175,8 @@ namespace VeiniaFramework.Editor
 				Edit();
 			}
 
-			EditorControls.disableDragMove = rotateButton.IsPressed && selectedObjects.Count > 0;
+			EditorControls.disableDragMove = (rotateButton.IsPressed || scaleButton.IsPressed) && selectedObjects.Count > 0;
+
 			if (rotateButton.IsPressed && editorControls.isDragging && Globals.input.GetMouse(0) && !Globals.input.GetKey(Keys.LeftControl))
 			{
 				if (Globals.input.GetKey(Keys.LeftShift) && MathF.Abs(Globals.input.mouseX) > .1f)
@@ -194,6 +199,19 @@ namespace VeiniaFramework.Editor
 				RotateSelectedAround(-45);
 			}
 
+			if (scaleButton.IsPressed && editorControls.isDragging && Globals.input.GetMouse(0) && !Globals.input.GetKey(Keys.LeftControl))
+			{
+				if (Globals.input.GetKey(Keys.LeftShift) && MathF.Abs(Globals.input.mouseX) > .1f)
+				{
+					var amount = Globals.input.mouseX > 0 ? 22.5f : -22.5f;
+					ScaleSelectedAround(amount);
+				}
+				else if (!Globals.input.GetKey(Keys.LeftControl))
+				{
+					ScaleSelectedAround(Globals.input.mouseX);
+				}
+			}
+
 			EditorLabelManager.Add("SelectedObjectCount", new Label { Text = "Selected Objects - " + selectedObjects.Count });
 		}
 
@@ -206,6 +224,26 @@ namespace VeiniaFramework.Editor
 			{
 				item.Position = item.Position.RotateAroundOrigin(origin, amount);
 				item.Rotation += amount;
+			}
+		}
+
+		private void ScaleSelectedAround(float amount)
+		{
+			if (selectedObjects.Count == 0) return;
+
+			var origin = new Vector2(
+				selectedObjects.Average(x => x.Position.X),
+				selectedObjects.Average(x => x.Position.Y));
+
+			var scaleFactor = 1f + amount * 0.01f;
+			scaleFactor = MathF.Max(0.01f, scaleFactor);
+
+			foreach (var item in selectedObjects)
+			{
+				var offset = item.Position - origin;
+
+				item.Position = origin + offset * scaleFactor;
+				item.Scale *= scaleFactor;
 			}
 		}
 
