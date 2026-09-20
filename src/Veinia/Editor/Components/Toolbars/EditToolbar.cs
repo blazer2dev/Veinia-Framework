@@ -12,7 +12,7 @@ namespace VeiniaFramework.Editor
 		{
 			var editToolbarBehaviour = (EditToolbarBehaviour)toolbarBehaviour;
 
-			var panel = new Panel { Height = 255 };
+			var panel = new Panel { Height = 280 };
 			displayedToolbarContent = panel;
 
 			var destroySelectedButton = new TextButton { Text = "Destroy Selected [RMB]" };
@@ -62,7 +62,14 @@ namespace VeiniaFramework.Editor
 			editToolbarBehaviour.scaleButton = scaleButton;
 			panel.Widgets.Add(scaleButton);
 
-			var editButton = new TextButton { Text = "Edit [E]", Top = 200 };
+			var resetScaleButton = new TextButton { Text = "Reset Scale [Ctrl+T]", Top = 200 };
+			resetScaleButton.Click += (o, e) =>
+			{
+				editToolbarBehaviour.ResetScale();
+			};
+			panel.Widgets.Add(resetScaleButton);
+
+			var editButton = new TextButton { Text = "Edit [E]", Top = 225 };
 			editButton.Click += (o, e) =>
 			{
 				editToolbarBehaviour.Edit();
@@ -70,10 +77,10 @@ namespace VeiniaFramework.Editor
 			panel.Widgets.Add(editButton);
 
 			//
-			panel.Widgets.Add(new HorizontalSeparator { Top = 225, VerticalAlignment = VerticalAlignment.Top });
+			panel.Widgets.Add(new HorizontalSeparator { Top = 250, VerticalAlignment = VerticalAlignment.Top });
 			//
 
-			var resetCamera = new TextButton { Text = "Reset Camera", Top = 235 };
+			var resetCamera = new TextButton { Text = "Reset Camera", Top = 260 };
 			resetCamera.Click += (o, e) =>
 			{
 				editToolbarBehaviour.ResetCamera();

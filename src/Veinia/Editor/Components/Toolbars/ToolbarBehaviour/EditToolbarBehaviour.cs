@@ -203,13 +203,17 @@ namespace VeiniaFramework.Editor
 			{
 				if (Globals.input.GetKey(Keys.LeftShift) && MathF.Abs(Globals.input.mouseX) > .1f)
 				{
-					var amount = Globals.input.mouseX > 0 ? 22.5f : -22.5f;
+					var amount = Globals.input.mouseX > 0 ? .5f : -.5f;
 					ScaleSelectedAround(amount);
 				}
 				else if (!Globals.input.GetKey(Keys.LeftControl))
 				{
 					ScaleSelectedAround(Globals.input.mouseX);
 				}
+			}
+			if (Globals.input.GetKey(Keys.LeftControl) && Globals.input.GetKey(Keys.T))
+			{
+				ResetScale();
 			}
 
 			EditorLabelManager.Add("SelectedObjectCount", new Label { Text = "Selected Objects - " + selectedObjects.Count });
@@ -330,6 +334,12 @@ namespace VeiniaFramework.Editor
 		{
 			selectedObjects.ForEach(x => x.Rotation = 0);
 			rotateButton.IsPressed = false;
+		}
+
+		public void ResetScale()
+		{
+			selectedObjects.ForEach(x => x.Scale = Vector2.One);
+			scaleButton.IsPressed = false;
 		}
 
 		public void ResetCamera()

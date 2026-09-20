@@ -34,8 +34,10 @@ namespace VeiniaFramework.Editor
 			 * Rotate - R
 			 * Incremented Rotation - LShift (While Rotating)
 			 * Rotate By 45 - Q
-			 * Scale - T
 			 * Reset Rotation - LCtrl + R
+			 * Scale - T
+			 * Normalized Scale - LShift (While Scaling)
+			 * Reset Scale - LCtrl + T
 			 * Move Selection - WSAD
 			 * Move Selection Slower - WSAD + LShift
 			 * Edit Selected - E
