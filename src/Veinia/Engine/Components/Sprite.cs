@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace VeiniaFramework
@@ -11,7 +12,6 @@ namespace VeiniaFramework
 		public Effect effect;
 		public DrawOptions drawOptions;
 		public Texture2D Texture { get; private set; }
-		public SpriteEffects spriteEffects = SpriteEffects.None;
 
 		private float pixelsPerUnit;
 
@@ -35,9 +35,10 @@ namespace VeiniaFramework
 			{
 				command = delegate
 				{
+					var flipSprite = (transform.scale.X < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None) | (transform.scale.Y < 0 ? SpriteEffects.FlipVertically : SpriteEffects.None);
 					sb.Draw(Texture, rect, SourceRectangle, color,
 						MathHelper.ToRadians(transform.rotation), origin: SourceRectangle.GetCenter(),
-						spriteEffects, layerDepth: 0);
+						flipSprite, layerDepth: 0);
 				},
 				Z = transform.Z,
 				drawOptions = drawOptions
@@ -54,7 +55,7 @@ namespace VeiniaFramework
 
 
 		public Rectangle rect => new Rectangle((int)transform.screenPos.X, (int)transform.screenPos.Y,
-											   (int)(DestinationSize.X * transform.scale.X),
-											   (int)(DestinationSize.Y * transform.scale.Y));
+											   (int)(DestinationSize.X * MathF.Abs(transform.scale.X)),
+											   (int)(DestinationSize.Y * MathF.Abs(transform.scale.Y)));
 	}
 }

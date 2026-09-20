@@ -50,7 +50,7 @@ namespace VeiniaFramework.Editor
 			get { return scale; }
 			set
 			{
-				scale = new Vector2(MathHelper.Clamp(value.X, 0, float.MaxValue), MathHelper.Clamp(value.Y, 0, float.MaxValue));
+				scale = value;
 				if (EditorPlacedSprite != null) EditorPlacedSprite.transform.scale = scale;
 			}
 		}
