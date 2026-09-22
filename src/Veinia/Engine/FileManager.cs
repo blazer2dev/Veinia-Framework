@@ -32,14 +32,11 @@ namespace VeiniaFramework
             // project directory
             var devProjectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
 
-            if (useDirectory)
-            {
-                var devProjectDirPath = Path.Combine(devProjectDirectory, path);
-                if (!Directory.Exists(devProjectDirPath))
-                    Directory.CreateDirectory(devProjectDirPath);
-            }
+            var devProjectDirPath = Path.Combine(devProjectDirectory, path);
+            if (useDirectory && !Directory.Exists(devProjectDirPath))
+                Directory.CreateDirectory(devProjectDirPath);
 
-            var devProjectWritePath = useDirectory ? Path.Combine(devProjectDirectory, gameWritePath) : gameWritePath;
+            var devProjectWritePath = Path.Combine(devProjectDirPath, fileName);
 
             if (UseEncryption) File.WriteAllBytes(devProjectWritePath, (byte[])dataToSave);
             else File.WriteAllText(devProjectWritePath, (string)dataToSave);
