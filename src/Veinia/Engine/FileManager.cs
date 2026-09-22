@@ -9,7 +9,7 @@ namespace VeiniaFramework
     {
         public static bool UseEncryption = true;
 
-        public static object Save(object objectToSave, string path, string fileName)
+        public static object Save(object objectToSave, string path, string fileName, bool appdataFolder = false)
         {
             object dataToSave = JsonConvert.SerializeObject(objectToSave);
 
@@ -18,14 +18,15 @@ namespace VeiniaFramework
             var useDirectory = !string.IsNullOrWhiteSpace(path);
 
             // game directory
-            if (useDirectory && !Directory.Exists(path))
-                Directory.CreateDirectory(path);
 
-            var gameWritePath = useDirectory ? Path.Combine(path, fileName) : fileName;
+            var saveFilePathDir = appdataFolder ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), path) : path;
+            if (useDirectory && !Directory.Exists(saveFilePathDir))
+                Directory.CreateDirectory(saveFilePathDir);
 
+            var saveFilePath = useDirectory ? Path.Combine(saveFilePathDir, fileName) : fileName;
 
-            if (UseEncryption) File.WriteAllBytes(gameWritePath, (byte[])dataToSave);
-            else File.WriteAllText(gameWritePath, (string)dataToSave);
+            if (UseEncryption) File.WriteAllBytes(saveFilePath, (byte[])dataToSave);
+            else File.WriteAllText(saveFilePath, (string)dataToSave);
             //
 
 #if !RELEASE
@@ -46,9 +47,11 @@ namespace VeiniaFramework
             return UseEncryption ? (byte[])dataToSave : (string)dataToSave;
         }
 
-        public static T1 Load<T1>(string path, string fileName)
+        public static T1 Load<T1>(string path, string fileName, bool appdataFolder = false)
         {
             var loadPath = string.IsNullOrWhiteSpace(path) ? fileName : Path.Combine(path, fileName);
+            if (appdataFolder) loadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), loadPath);
+
             object dataToLoad;
 
             if (OperatingSystem.IsBrowser())
