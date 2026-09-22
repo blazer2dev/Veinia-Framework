@@ -57,45 +57,13 @@ namespace VeiniaFramework
 		/// </summary>
 		private void LoadObjects(string editorLevelName)
 		{
-			var levelPath = Path.Combine(EditorJSON.LevelsFolder, editorLevelName);
-
-			string dataToLoad = string.Empty;
-
-			if (OperatingSystem.IsBrowser())
-			{
-				using (var stream = TitleContainer.OpenStream(levelPath))
-				{
-					if (stream == null)
-					{
-						Say.Line("No Level File Found! " + levelPath);
-						return;
-					}
-					using (var reader = new StreamReader(stream))
-					{
-						dataToLoad = reader.ReadToEnd();
-					}
-				}
-			}
-			else
-			{
-				if (!File.Exists(levelPath))
-				{
-					Say.Line("No Level File Found! " + levelPath);
-					return;
-				}
-				dataToLoad = FileManager.UseEncryption ? Encryption.Decrypt(File.ReadAllBytes(levelPath)) : File.ReadAllText(levelPath);
-			}
-
-
-			var sceneFile = JsonConvert.DeserializeObject<SceneFile>(dataToLoad);
+			var sceneFile = FileManager.Load<SceneFile>(EditorJSON.LevelsFolder, levelName);
 
 			foreach (var item in sceneFile.objects)
 			{
 				var prefab = prefabManager?.Find(item.PrefabName);
-				if (prefab == null)
-				{
-					throw new System.Exception("Prefabs that got deleted and are still on " + editorLevelName);
-				}
+				if (prefab == null) throw new System.Exception("Prefabs that got deleted and are still on " + editorLevelName);
+
 				var sample = Instantiate(new Transform { position = item.Position, rotation = item.Rotation, scale = item.Scale, Z = item.Z }, prefab);
 				sample.customData = item.customData;
 
