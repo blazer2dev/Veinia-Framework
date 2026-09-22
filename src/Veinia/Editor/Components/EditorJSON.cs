@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Newtonsoft.Json;
 using System;
-using System.IO;
 
 namespace VeiniaFramework.Editor
 {
@@ -11,8 +9,6 @@ namespace VeiniaFramework.Editor
 		EditorObjectManager editorObjectManager;
 
 		private string editedLevelName;
-
-		public static bool UseEncryption = true;
 
 		public static string LevelsFolder = "LevelData";
 
@@ -23,16 +19,14 @@ namespace VeiniaFramework.Editor
 
 		public override void Initialize()
 		{
-			EditorCheckboxes.Add("Encrypt Scene", UseEncryption, (e, o) => { UseEncryption = true; }, (e, o) => { UseEncryption = false; });
-
 			editorObjectManager = FindComponentOfType<EditorObjectManager>();
 
 			sceneFile = new SceneFile();
 
-			Load();
+			LoadScene();
 		}
 
-		public void Save()
+		public void SaveScene()
 		{
 			if (editedLevelName == null || editedLevelName == string.Empty)
 			{
@@ -44,41 +38,17 @@ namespace VeiniaFramework.Editor
 			sceneFile.editorCamPosition = Globals.camera.GetPosition();
 			sceneFile.editorCamScale = Globals.camera.Scale;
 
-			object dataToSave = JsonConvert.SerializeObject(sceneFile);
+			var savedData = FileManager.Save(sceneFile, LevelsFolder, editedLevelName);
 
 			if (OperatingSystem.IsBrowser())
 			{
 				EditorScene.ErrorWindow("Run Console", "Level Printed In Console: " + editedLevelName);
-				Say.Line(dataToSave);
+				Say.Line(savedData);
 				return;
 			}
-			else
-			{
-				if (UseEncryption) dataToSave = Encryption.Encrypt((string)dataToSave);
-			}
-
-			// game directory
-			if (!Directory.Exists(LevelsFolder)) Directory.CreateDirectory(LevelsFolder);
-
-			var gameWritePath = Path.Combine(LevelsFolder, editedLevelName);
-
-			if (UseEncryption) File.WriteAllBytes(gameWritePath, (byte[])dataToSave);
-			else File.WriteAllText(gameWritePath, (string)dataToSave);
-			//
-
-			// project directory
-			var projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
-			var projectLevelFolder = Path.Combine(projectDirectory, LevelsFolder);
-			if (!Directory.Exists(projectLevelFolder)) Directory.CreateDirectory(projectLevelFolder);
-
-			var projectWritePath = Path.Combine(projectLevelFolder, editedLevelName);
-
-			if (UseEncryption) File.WriteAllBytes(projectWritePath, (byte[])dataToSave);
-			else File.WriteAllText(projectWritePath, (string)dataToSave);
-			//
 		}
 
-		public void Load()
+		public void LoadScene()
 		{
 			if (editedLevelName == null || editedLevelName == string.Empty)
 			{
@@ -88,41 +58,10 @@ namespace VeiniaFramework.Editor
 
 			editorObjectManager.RemoveAll(); // when changing levels in editor
 
-			var loadDir = Path.Combine(LevelsFolder, editedLevelName);
-			object dataToLoad;
-			if (OperatingSystem.IsBrowser())
-			{
-				using (var stream = TitleContainer.OpenStream(loadDir))
-				{
-					if (stream == null)
-					{
-						Say.Line("No Level File Found! " + loadDir);
-						return;
-					}
-					using (var reader = new StreamReader(stream))
-					{
-						dataToLoad = reader.ReadToEnd();
-					}
-				}
-			}
-			else
-			{
-				dataToLoad = UseEncryption ? Encryption.Decrypt(File.ReadAllBytes(loadDir))
-								: File.ReadAllText(loadDir);
-
-				if (!File.Exists(loadDir))
-				{
-					Say.Line("No Level File Found! " + loadDir);
-					return;
-				}
-			}
-
-			sceneFile = JsonConvert.DeserializeObject<SceneFile>((string)dataToLoad);
+			sceneFile = FileManager.Load<SceneFile>(LevelsFolder, editedLevelName);
 
 			foreach (var item in sceneFile.objects)
-			{
 				editorObjectManager.Spawn(item);
-			}
 
 			Globals.camera.SetPosition(sceneFile.editorCamPosition ?? Vector2.Zero);
 			Globals.camera.Scale = sceneFile.editorCamScale ?? 1;
@@ -130,7 +69,7 @@ namespace VeiniaFramework.Editor
 
 		public override void Update()
 		{
-			if (Globals.input.GetKey(Keys.LeftControl) && Globals.input.GetKeyDown(Keys.S)) Save();
+			if (Globals.input.GetKey(Keys.LeftControl) && Globals.input.GetKeyDown(Keys.S)) SaveScene();
 		}
 	}
 }

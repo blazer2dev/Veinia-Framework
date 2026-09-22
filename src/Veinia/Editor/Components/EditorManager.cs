@@ -23,11 +23,11 @@ namespace VeiniaFramework.Editor
 			window.Width = 310;
 
 			var saveButton = new TextButton { Text = "Save" };
-			saveButton.Click += (s, e) => editorLoader.Save();
+			saveButton.Click += (s, e) => editorLoader.SaveScene();
 			panel.Widgets.Add(saveButton);
 
 			var loadButton = new TextButton { Text = "Load", Left = 50 };
-			loadButton.Click += (s, e) => editorLoader.Load();
+			loadButton.Click += (s, e) => editorLoader.LoadScene();
 			panel.Widgets.Add(loadButton);
 
 			var removeAllButton = new TextButton { Text = "Remove All", Left = 100 };
