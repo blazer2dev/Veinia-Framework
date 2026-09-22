@@ -38,7 +38,7 @@ namespace VeiniaFramework.Editor
 			sceneFile.editorCamPosition = Globals.camera.GetPosition();
 			sceneFile.editorCamScale = Globals.camera.Scale;
 
-			var savedData = FileManager.Save(sceneFile, LevelsFolder, editedLevelName);
+			var savedData = FileManager.Save(sceneFile, LevelsFolder, editedLevelName, saveToDevWorkspace: true);
 
 			if (OperatingSystem.IsBrowser())
 			{

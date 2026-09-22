@@ -9,7 +9,7 @@ namespace VeiniaFramework
     {
         public static bool UseEncryption = true;
 
-        public static object Save(object objectToSave, string path, string fileName, bool appdataFolder = false)
+        public static object Save(object objectToSave, string path, string fileName, bool appdataFolder = false, bool saveToDevWorkspace = false)
         {
             object dataToSave = JsonConvert.SerializeObject(objectToSave);
 
@@ -30,18 +30,19 @@ namespace VeiniaFramework
             //
 
 #if !RELEASE
-            // project directory
-            var devProjectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+            if (saveToDevWorkspace)
+            {
+                var devProjectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
 
-            var devProjectDirPath = Path.Combine(devProjectDirectory, path);
-            if (useDirectory && !Directory.Exists(devProjectDirPath))
-                Directory.CreateDirectory(devProjectDirPath);
+                var devProjectDirPath = Path.Combine(devProjectDirectory, path);
+                if (useDirectory && !Directory.Exists(devProjectDirPath))
+                    Directory.CreateDirectory(devProjectDirPath);
 
-            var devProjectWritePath = Path.Combine(devProjectDirPath, fileName);
+                var devProjectWritePath = Path.Combine(devProjectDirPath, fileName);
 
-            if (UseEncryption) File.WriteAllBytes(devProjectWritePath, (byte[])dataToSave);
-            else File.WriteAllText(devProjectWritePath, (string)dataToSave);
-            //
+                if (UseEncryption) File.WriteAllBytes(devProjectWritePath, (byte[])dataToSave);
+                else File.WriteAllText(devProjectWritePath, (string)dataToSave);
+            }
 #endif
 
             return UseEncryption ? (byte[])dataToSave : (string)dataToSave;
