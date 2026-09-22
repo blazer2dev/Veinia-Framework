@@ -83,7 +83,7 @@ namespace VeiniaFramework
 					Say.Line("No Level File Found! " + levelPath);
 					return;
 				}
-				dataToLoad = EditorJSON.UseEncryption ? Encryption.Decrypt(File.ReadAllBytes(levelPath)) : File.ReadAllText(levelPath);
+				dataToLoad = FileManager.UseEncryption ? Encryption.Decrypt(File.ReadAllBytes(levelPath)) : File.ReadAllText(levelPath);
 			}
 
 

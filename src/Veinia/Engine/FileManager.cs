@@ -9,7 +9,7 @@ namespace VeiniaFramework
     {
         public static bool UseEncryption = true;
 
-        public static string Save(object objectToSave, string path, string fileName)
+        public static object Save(object objectToSave, string path, string fileName)
         {
             object dataToSave = JsonConvert.SerializeObject(objectToSave);
 
@@ -35,7 +35,7 @@ namespace VeiniaFramework
             else File.WriteAllText(projectWritePath, (string)dataToSave);
             //
 
-            return (string)dataToSave;
+            return UseEncryption ? (byte[])dataToSave : (string)dataToSave;
         }
 
         public static T1 Load<T1>(string path, string fileName)
