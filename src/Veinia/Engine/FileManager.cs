@@ -15,10 +15,14 @@ namespace VeiniaFramework
 
             if (UseEncryption) dataToSave = Encryption.Encrypt((string)dataToSave);
 
-            // game directory
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            var useDirectory = !string.IsNullOrWhiteSpace(path);
 
-            var gameWritePath = Path.Combine(path, fileName);
+            // game directory
+            if (useDirectory && !Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            var gameWritePath = useDirectory ? Path.Combine(path, fileName) : fileName;
+
 
             if (UseEncryption) File.WriteAllBytes(gameWritePath, (byte[])dataToSave);
             else File.WriteAllText(gameWritePath, (string)dataToSave);
@@ -26,13 +30,19 @@ namespace VeiniaFramework
 
 #if !RELEASE
             // project directory
-            var projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
-            var projectLevelFolder = Path.Combine(projectDirectory, path);
-            if (!Directory.Exists(projectLevelFolder)) Directory.CreateDirectory(projectLevelFolder);
+            var devProjectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
 
-            var projectWritePath = Path.Combine(projectLevelFolder, fileName);
-            if (UseEncryption) File.WriteAllBytes(projectWritePath, (byte[])dataToSave);
-            else File.WriteAllText(projectWritePath, (string)dataToSave);
+            if (useDirectory)
+            {
+                var devProjectDirPath = Path.Combine(devProjectDirectory, path);
+                if (!Directory.Exists(devProjectDirPath))
+                    Directory.CreateDirectory(devProjectDirPath);
+            }
+
+            var devProjectWritePath = useDirectory ? Path.Combine(devProjectDirectory, gameWritePath) : gameWritePath;
+
+            if (UseEncryption) File.WriteAllBytes(devProjectWritePath, (byte[])dataToSave);
+            else File.WriteAllText(devProjectWritePath, (string)dataToSave);
             //
 #endif
 
@@ -41,14 +51,14 @@ namespace VeiniaFramework
 
         public static T1 Load<T1>(string path, string fileName)
         {
-            var loadDir = Path.Combine(path, fileName);
+            var loadPath = string.IsNullOrWhiteSpace(path) ? fileName : Path.Combine(path, fileName);
             object dataToLoad;
 
             if (OperatingSystem.IsBrowser())
             {
-                using (var stream = TitleContainer.OpenStream(loadDir))
+                using (var stream = TitleContainer.OpenStream(loadPath))
                 {
-                    if (stream == null) throw new Exception("No File Found! " + loadDir);
+                    if (stream == null) throw new Exception("No File Found! " + loadPath);
 
                     using (var reader = new StreamReader(stream))
                         dataToLoad = reader.ReadToEnd();
@@ -56,9 +66,9 @@ namespace VeiniaFramework
             }
             else
             {
-                dataToLoad = UseEncryption ? Encryption.Decrypt(File.ReadAllBytes(loadDir)) : File.ReadAllText(loadDir);
+                dataToLoad = UseEncryption ? Encryption.Decrypt(File.ReadAllBytes(loadPath)) : File.ReadAllText(loadPath);
 
-                if (!File.Exists(loadDir)) throw new Exception("No File Found! " + loadDir);
+                if (!File.Exists(loadPath)) throw new Exception("No File Found! " + loadPath);
             }
 
             return JsonConvert.DeserializeObject<T1>((string)dataToLoad);
