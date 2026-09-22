@@ -24,16 +24,17 @@ namespace VeiniaFramework
             else File.WriteAllText(gameWritePath, (string)dataToSave);
             //
 
+#if !RELEASE
             // project directory
             var projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
             var projectLevelFolder = Path.Combine(projectDirectory, path);
             if (!Directory.Exists(projectLevelFolder)) Directory.CreateDirectory(projectLevelFolder);
 
             var projectWritePath = Path.Combine(projectLevelFolder, fileName);
-
             if (UseEncryption) File.WriteAllBytes(projectWritePath, (byte[])dataToSave);
             else File.WriteAllText(projectWritePath, (string)dataToSave);
             //
+#endif
 
             return UseEncryption ? (byte[])dataToSave : (string)dataToSave;
         }
