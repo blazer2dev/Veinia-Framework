@@ -195,13 +195,18 @@ namespace VeiniaFramework
 					destroyable.Dispose();
 				}
 
-				components.Remove(components.Find(x => x == component));
+				components.Remove(component);
 			}
 		}
-		public void RemoveComponent<T1>()
+		public void RemoveComponent<T1>() where T1 : Component
 		{
-			var c = components.FindAll(x => x is T1);
-			if (c.Count > 0) c.ForEach(RemoveComponent);
+			var toRemove = GetAllComponents<T1>();
+			if (toRemove.Count == 0) throw new Exception("RemoveComponent<T1> - No component matches found! " + typeof(T1));
+
+			foreach (var c in toRemove)
+			{
+				RemoveComponent(c);
+			}
 		}
 
 		public void DestroyGameObject(bool destroyChildObjects = false)
