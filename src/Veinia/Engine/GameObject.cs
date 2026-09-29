@@ -118,7 +118,7 @@ namespace VeiniaFramework
 
 		public List<T1> GetAllComponents<T1>() where T1 : Component
 		{
-			List<T1> temp = new List<T1>();
+			var temp = new List<T1>();
 
 			foreach (var component in components)
 			{
@@ -135,24 +135,17 @@ namespace VeiniaFramework
 		{
 			if (isDestroyed) throw new Exception("GetComponent<T1> - The object is already destroyed!");
 
-			List<T1> returnVal = new List<T1>();
+			T1 found = default;
 
 			foreach (var item in components)
 			{
 				if (item is T1)
 				{
-					returnVal.Add((T1)item);
+					if (found != null) throw new Exception("GetComponent<T1> - More than one matching components! " + typeof(T1));
+					found = (T1)item;
 				}
 			}
-
-			if (returnVal.Count == 0)
-				return default;
-
-			if (returnVal.Count > 1)
-				throw new Exception("GetComponent<T1> - More than one matching components! " + typeof(T1));
-
-			else
-				return returnVal[0];
+			return found;
 		}
 
 		public Component AddComponent(Component component, bool callInitialize = true)
