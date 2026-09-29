@@ -411,27 +411,18 @@ namespace VeiniaFramework
 		/// </summary>
 		public GameObject FindObjectByData(object match)
 		{
-			var returnVal = new List<GameObject>();
+			GameObject found = default;
 
 			foreach (var item in scene)
 			{
-				GameObject currentItem = null;
-				if (item.customData != null && item.customData.Equals(match))
-					currentItem = item;
-				if (currentItem == null) continue;
-				else returnVal.Add(currentItem);
+				if (item.customData == null || !item.customData.Equals(match)) continue;
+				if (found != null) throw new System.Exception("FindObjectByData - Found more than one object matching the requirements! Query: " + match);
+				else found = item;
 			}
 
-			if (returnVal.Count == 0)
-			{
-				Say.Line("FindObjectByData - Found no object matching requirements! Query: " + (string)match);
-				return default;
-			}
+			if (found == null) throw new System.Exception("FindObjectByData - Found no object matching requirements! Query: " + match);
 
-			if (returnVal.Count > 1)
-				Say.Line("FindObjectByData - Found more than one object matching the requirements! Query:" + (string)match);
-
-			return returnVal[0];
+			return found;
 		}
 
 		/// <summary>
@@ -439,24 +430,21 @@ namespace VeiniaFramework
 		/// </summary>
 		public List<GameObject> FindObjectsByData(object match)
 		{
-			var returnVal = new List<GameObject>();
+			var temp = new List<GameObject>();
 
 			foreach (var item in scene)
 			{
-				GameObject currentItem = null;
-				if (item.customData != null && item.customData.Equals(match))
-					currentItem = item;
-				if (currentItem == null) continue;
-				else returnVal.Add(currentItem);
+				if (item.customData == null || !item.customData.Equals(match)) continue;
+				temp.Add(item);
 			}
-			if (returnVal.Count == 0)
-				Say.Line("FindObjectsByData - Found no object matching requirements! Query: " + (string)match);
 
-			return returnVal;
+			if (temp.Count == 0) throw new System.Exception("FindObjectsByData - Found no object matching requirements! Query: " + match);
+
+			return temp;
 		}
 
 		/// <summary>
-		/// Finds component in the scene by customData
+		/// Finds a component in the scene by customData
 		/// </summary>
 		public T1 FindComponentByData<T1>(object match) where T1 : Component => FindObjectByData(match).GetComponent<T1>();
 
@@ -465,20 +453,16 @@ namespace VeiniaFramework
 		/// </summary>
 		public List<T1> FindComponentsByData<T1>(object match) where T1 : Component
 		{
-			var objects = FindObjectsByData(match);
+			var temp = new List<T1>();
 
-			var returnVal = new List<T1>();
-
-			foreach (var item in objects)
+			foreach (var item in FindObjectsByData(match))
 			{
-				var currentItem = item.GetComponent<T1>();
-				if (currentItem != null)
-				{
-					returnVal.Add(currentItem);
-				}
+				var component = item.GetComponent<T1>();
+				if (component != null)
+					temp.Add(component);
 			}
 
-			return returnVal;
+			return temp;
 		}
 	}
 }
