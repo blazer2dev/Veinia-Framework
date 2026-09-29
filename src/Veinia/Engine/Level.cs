@@ -390,18 +390,20 @@ namespace VeiniaFramework
 		/// </summary>
 		public List<T1> FindComponentsOfType<T1>() where T1 : Component
 		{
-			var returnVal = new List<T1>();
+			var temp = new List<T1>();
 
 			foreach (var item in scene)
 			{
-				var matchingComponents = item.GetAllComponents<T1>();
-
-				matchingComponents.AddAllTo(returnVal);
+				foreach (var component in item.components)
+				{
+					if (component is T1)
+						temp.Add((T1)component);
+				}
 			}
-			if (returnVal.Count == 0)
-				Say.Line("FindComponentsOfType<T1> - Found no components matching requirements! " + typeof(T1));
 
-			return returnVal;
+			if (temp.Count == 0) throw new System.Exception("FindComponentsOfType<T1> - Found no components matching requirements! " + typeof(T1));
+
+			return temp;
 		}
 
 		/// <summary>
