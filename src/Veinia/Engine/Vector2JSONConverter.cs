@@ -6,16 +6,9 @@ using System.Globalization;
 
 public class Vector2JSONConverter : JsonConverter
 {
-	public override bool CanConvert(Type objectType)
-	{
-		return objectType == typeof(Vector2)
-			|| objectType == typeof(Vector2?);
-	}
+	public override bool CanConvert(Type objectType) => objectType == typeof(Vector2) || objectType == typeof(Vector2?);
 
-	public override void WriteJson(
-		JsonWriter writer,
-		object value,
-		JsonSerializer serializer)
+	public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 	{
 		if (value == null)
 		{
@@ -36,45 +29,24 @@ public class Vector2JSONConverter : JsonConverter
 		writer.WriteEndObject();
 	}
 
-	public override object ReadJson(
-		JsonReader reader,
-		Type objectType,
-		object existingValue,
-		JsonSerializer serializer)
+	public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 	{
-		// NULL SUPPORT
-		if (reader.TokenType == JsonToken.Null)
-			return null;
+		if (reader.TokenType == JsonToken.Null) return null;
 
-		// OBJECT FORMAT
 		if (reader.TokenType == JsonToken.StartObject)
 		{
 			JObject obj = JObject.Load(reader);
 
-			return new Vector2(
-				obj["x"]!.Value<float>(),
-				obj["y"]!.Value<float>()
-			);
+			return new Vector2(obj["x"]!.Value<float>(), obj["y"]!.Value<float>());
 		}
 
-		// STRING FORMAT (optional legacy support)
 		if (reader.TokenType == JsonToken.String)
 		{
-			string s = ((string)reader.Value)
-				.Replace(",", " ")
-				.Trim();
+			string s = ((string)reader.Value).Replace(",", " ").Trim();
 
-			string[] parts = s.Split(
-				' ',
-				StringSplitOptions.RemoveEmptyEntries);
+			string[] parts = s.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-			if (parts.Length == 2)
-			{
-				return new Vector2(
-					float.Parse(parts[0], CultureInfo.InvariantCulture),
-					float.Parse(parts[1], CultureInfo.InvariantCulture)
-				);
-			}
+			if (parts.Length == 2) return new Vector2(float.Parse(parts[0], CultureInfo.InvariantCulture), float.Parse(parts[1], CultureInfo.InvariantCulture));
 
 			if (parts.Length == 1)
 			{
@@ -83,6 +55,6 @@ public class Vector2JSONConverter : JsonConverter
 			}
 		}
 
-		throw new InvalidOperationException("Invalid Vector2");
+		throw new InvalidOperationException("Invalid Vector2 - Can't read");
 	}
 }
