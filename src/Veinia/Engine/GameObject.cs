@@ -133,7 +133,7 @@ namespace VeiniaFramework
 
 		public T1 GetComponent<T1>() where T1 : Component
 		{
-			if (isDestroyed) throw new Exception("GetComponent<T1> - The object is already destroyed!");
+			if (isDestroyed) throw new Exception("GetComponent<T1> - The object is already destroyed! " + typeof(T1));
 
 			T1 found = default;
 
