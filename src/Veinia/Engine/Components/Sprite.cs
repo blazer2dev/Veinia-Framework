@@ -9,7 +9,6 @@ namespace VeiniaFramework
 		public Color color = Color.White;
 		public Vector2 DestinationSize { get; private set; }
 		public Rectangle? SourceRectangle { get; private set; }
-		public Effect effect;
 		public DrawOptions drawOptions;
 		public Texture2D Texture { get; private set; }
 
@@ -50,6 +49,9 @@ namespace VeiniaFramework
 		{
 			this.Texture = texture;
 			this.SourceRectangle = sourceRectangle ?? texture.Bounds;
+
+			drawOptions.shader?.Parameters["TexelSize"]?.SetValue(new Vector2(1f / texture.Width, 1f / texture.Height));
+
 			DestinationSize = new Vector2(this.SourceRectangle.Value.Width, this.SourceRectangle.Value.Height) / (this.pixelsPerUnit / Transform.unitSize);
 		}
 
