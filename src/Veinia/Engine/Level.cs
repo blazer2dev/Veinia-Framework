@@ -186,7 +186,18 @@ namespace VeiniaFramework
 		}
 
 		/// <summary>
-		/// Updates objects in the current scene after the normal update.
+		/// Updates objects in the current scene after the normal update before late update.
+		/// </summary>
+		public virtual void PreLateUpdate()
+		{
+			for (int i = 0; i < activeScene.Count; i++)
+			{
+				activeScene[i].PreLateUpdate();
+			}
+		}
+
+		/// <summary>
+		/// Updates objects in the current scene after the normal update & pre late update
 		/// </summary>
 		public virtual void LateUpdate()
 		{

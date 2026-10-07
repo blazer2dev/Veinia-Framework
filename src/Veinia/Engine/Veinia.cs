@@ -112,6 +112,7 @@ namespace VeiniaFramework
 
 					level.AssignActiveScene();
 					level.Update();
+					level.PreLateUpdate();
 					level.LateUpdate();
 				}
 

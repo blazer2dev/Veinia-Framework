@@ -21,6 +21,7 @@ namespace VeiniaFramework
 		public virtual void EarlyInitialize() { }
 		public virtual void Initialize() { }
 		public virtual void Update() { }
+		public virtual void PreLateUpdate() { } // mostly for synchronising physics bodies to transform
 		public virtual void LateUpdate() { }
 		public virtual bool OnCollide(Fixture sender, Fixture other, Contact contact) => true;
 		public virtual void OnSeparate(Fixture sender, Fixture other, Contact contact) { }

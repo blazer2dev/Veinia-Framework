@@ -97,7 +97,7 @@ namespace VeiniaFramework
 		}
 		[Browsable(false)] public float localZ { get; private set; }
 
-		public override void LateUpdate() // synchronise bodies 
+		public override void PreLateUpdate() // synchronise bodies 
 		{
 			if (body != null && Parent != null)
 			{

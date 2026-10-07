@@ -94,6 +94,15 @@ namespace VeiniaFramework
 			}
 		}
 
+		public void PreLateUpdate()
+		{
+			for (int i = 0; i < components.Count; i++)
+			{
+				if (!components[i].isEnabled) continue;
+				components[i].PreLateUpdate();
+			}
+		}
+
 		public void LateUpdate()
 		{
 			for (int i = 0; i < components.Count; i++)
