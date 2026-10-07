@@ -27,9 +27,12 @@ namespace VeiniaFramework
 				destination.Add(item);
 			}
 		}
-		public static Rectangle Scale(this Rectangle rect, Vector2 scale)
+		public static Rectangle Scale(this Rectangle rect, Vector2? scaleMultiplier = default, Vector2? scaleIncrement = default)
 		{
-			return new Rectangle(rect.X, rect.Y, (int)(rect.Width * scale.X), (int)(rect.Height * scale.Y));
+			var multi = scaleMultiplier ?? Vector2.One;
+			var increment = scaleIncrement ?? Vector2.Zero;
+
+			return new Rectangle(rect.X, rect.Y, (int)(rect.Width * multi.X + increment.X), (int)(rect.Height * multi.Y + increment.Y));
 		}
 		public static Rectangle OffsetNew(this Rectangle rect, Vector2 offset)
 		{
