@@ -378,7 +378,7 @@ namespace VeiniaFramework
 		/// <summary>
 		/// Finds a component in the scene.
 		/// </summary>
-		public T1 FindComponentOfType<T1>() where T1 : Component
+		public T1 FindComponentOfType<T1>(bool allowNone = false) where T1 : Component
 		{
 			T1 found = default;
 
@@ -386,12 +386,11 @@ namespace VeiniaFramework
 			{
 				T1 match = item.GetComponent<T1>();
 				if (match == null) continue;
-				if (found != null) throw new System.Exception("FindComponentOfType<T1> - Found more than one component matching the requirements! " + typeof(T1));
+				if (found != null && !allowNone) throw new System.Exception("FindComponentOfType<T1> - Found more than one component matching the requirements! " + typeof(T1));
 				else found = match;
 			}
 
-			if (found == null)
-				throw new System.Exception("FindComponentOfType<T1> - Found no components matching requirements! " + typeof(T1));
+			if (found == null && !allowNone) throw new System.Exception("FindComponentOfType<T1> - Found no components matching requirements! " + typeof(T1));
 
 			return found;
 		}
@@ -399,7 +398,7 @@ namespace VeiniaFramework
 		/// <summary>
 		/// Finds multiple components in a scene.
 		/// </summary>
-		public List<T1> FindComponentsOfType<T1>() where T1 : Component
+		public List<T1> FindComponentsOfType<T1>(bool allowNone = false) where T1 : Component
 		{
 			var temp = new List<T1>();
 
@@ -412,7 +411,7 @@ namespace VeiniaFramework
 				}
 			}
 
-			if (temp.Count == 0) throw new System.Exception("FindComponentsOfType<T1> - Found no components matching requirements! " + typeof(T1));
+			if (temp.Count == 0 && !allowNone) throw new System.Exception("FindComponentsOfType<T1> - Found no components matching requirements! " + typeof(T1));
 
 			return temp;
 		}
@@ -420,18 +419,18 @@ namespace VeiniaFramework
 		/// <summary>
 		/// Finds an object in the scene by customData.
 		/// </summary>
-		public GameObject FindObjectByData(object match)
+		public GameObject FindObjectByData(object match, bool allowNone = false)
 		{
 			GameObject found = default;
 
 			foreach (var item in scene)
 			{
 				if (item.customData == null || !item.customData.Equals(match)) continue;
-				if (found != null) throw new System.Exception("FindObjectByData - Found more than one object matching the requirements! Query: " + match);
+				if (found != null && !allowNone) throw new System.Exception("FindObjectByData - Found more than one object matching the requirements! Query: " + match);
 				else found = item;
 			}
 
-			if (found == null) throw new System.Exception("FindObjectByData - Found no object matching requirements! Query: " + match);
+			if (found == null && !allowNone) throw new System.Exception("FindObjectByData - Found no object matching requirements! Query: " + match);
 
 			return found;
 		}
@@ -439,7 +438,7 @@ namespace VeiniaFramework
 		/// <summary>
 		/// Finds objects in the scene by customData.
 		/// </summary>
-		public List<GameObject> FindObjectsByData(object match)
+		public List<GameObject> FindObjectsByData(object match, bool allowNone = false)
 		{
 			var temp = new List<GameObject>();
 
@@ -449,7 +448,7 @@ namespace VeiniaFramework
 				temp.Add(item);
 			}
 
-			if (temp.Count == 0) throw new System.Exception("FindObjectsByData - Found no object matching requirements! Query: " + match);
+			if (temp.Count == 0 && !allowNone) throw new System.Exception("FindObjectsByData - Found no object matching requirements! Query: " + match);
 
 			return temp;
 		}
@@ -457,16 +456,16 @@ namespace VeiniaFramework
 		/// <summary>
 		/// Finds a component in the scene by customData
 		/// </summary>
-		public T1 FindComponentByData<T1>(object match) where T1 : Component => FindObjectByData(match).GetComponent<T1>();
+		public T1 FindComponentByData<T1>(object match, bool allowNone = false) where T1 : Component => FindObjectByData(match, allowNone).GetComponent<T1>();
 
 		/// <summary>
 		/// Finds components in the scene by customData
 		/// </summary>
-		public List<T1> FindComponentsByData<T1>(object match) where T1 : Component
+		public List<T1> FindComponentsByData<T1>(object match, bool allowNone = false) where T1 : Component
 		{
 			var temp = new List<T1>();
 
-			foreach (var item in FindObjectsByData(match))
+			foreach (var item in FindObjectsByData(match, allowNone))
 			{
 				var component = item.GetComponent<T1>();
 				if (component != null)

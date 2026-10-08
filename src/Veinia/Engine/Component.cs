@@ -25,12 +25,12 @@ namespace VeiniaFramework
 		public virtual void LateUpdate() { }
 		public virtual bool OnCollide(Fixture sender, Fixture other, Contact contact) => true;
 		public virtual void OnSeparate(Fixture sender, Fixture other, Contact contact) { }
-		public T1 FindComponentOfType<T1>() where T1 : Component => level.FindComponentOfType<T1>();
-		public List<T1> FindComponentsOfType<T1>() where T1 : Component => level.FindComponentsOfType<T1>();
-		public GameObject FindObjectByData(object match) => level.FindObjectByData(match);
-		public T1 FindComponentByData<T1>(object match) where T1 : Component => level.FindComponentByData<T1>(match);
-		public List<T1> FindComponentsByData<T1>(object match) where T1 : Component => level.FindComponentsByData<T1>(match);
-		public List<GameObject> FindObjectsByData(object match) => level.FindObjectsByData(match);
+		public T1 FindComponentOfType<T1>(bool allowNone = false) where T1 : Component => level.FindComponentOfType<T1>(allowNone);
+		public List<T1> FindComponentsOfType<T1>(bool allowNone = false) where T1 : Component => level.FindComponentsOfType<T1>(allowNone);
+		public GameObject FindObjectByData(object match, bool allowNone = false) => level.FindObjectByData(match, allowNone);
+		public T1 FindComponentByData<T1>(object match, bool allowNone = false) where T1 : Component => level.FindComponentByData<T1>(match, allowNone);
+		public List<T1> FindComponentsByData<T1>(object match, bool allowNone = false) where T1 : Component => level.FindComponentsByData<T1>(match, allowNone);
+		public List<GameObject> FindObjectsByData(object match, bool allowNone = false) => level.FindObjectsByData(match, allowNone);
 		public T1 GetComponent<T1>() where T1 : Component => gameObject.GetComponent<T1>();
 		public List<T1> GetAllComponents<T1>() where T1 : Component => gameObject.GetAllComponents<T1>();
 		public Component AddComponent(Component component) => gameObject.AddComponent(component);
