@@ -62,7 +62,7 @@ namespace VeiniaFramework
 			this.isStatic = isStatic;
 			this.dontDestroyOnLoad = dontDestroyOnLoad;
 
-			RemoveAllComponents<Transform>(); // remove transform to make sure there aren't two transforms (prefab case)
+			RemoveAllComponents<Transform>(immediate: true); // remove transform to make sure there aren't two transforms (prefab case)
 
 			components.Add(transform); // the transform is added afterwards to components to ensure the gameobject having a transform
 		}
@@ -192,10 +192,8 @@ namespace VeiniaFramework
 			return temp.Min();
 		}
 
-		public void RemoveComponent(Component component)
+		public void RemoveComponent(Component component, bool immediate = false)
 		{
-			NextFrame.actions.Add(RemoveNextFrame);
-
 			void RemoveNextFrame()
 			{
 				if (component is IDisposable)
@@ -206,14 +204,17 @@ namespace VeiniaFramework
 
 				components.Remove(component);
 			}
+
+			if (immediate) RemoveNextFrame();
+			else NextFrame.actions.Add(RemoveNextFrame);
 		}
-		public void RemoveAllComponents<T1>() where T1 : Component
+		public void RemoveAllComponents<T1>(bool immediate = false) where T1 : Component
 		{
 			var toRemove = GetAllComponents<T1>();
 
 			foreach (var c in toRemove)
 			{
-				RemoveComponent(c);
+				RemoveComponent(c, immediate);
 			}
 		}
 
