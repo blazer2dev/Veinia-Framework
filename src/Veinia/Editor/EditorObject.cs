@@ -77,6 +77,6 @@ namespace VeiniaFramework.Editor
 
 		[Browsable(false)][JsonIgnore] public Sprite EditorPlacedSprite { get; set; }
 
-		[Browsable(false)][JsonIgnore] public IDrawGizmos gizmo { get; set; }
+		[Browsable(false)][JsonIgnore] public IDrawGizmos drawGizmo { get; set; }
 	}
 }

@@ -4,6 +4,6 @@ namespace VeiniaFramework.Editor
 {
 	public interface IDrawGizmos
 	{
-		public void DrawGizmos(SpriteBatch sb, Level editorScene, EditorObject editorObject);
+		public void DrawGizmos(SpriteBatch sb, Level editorScene, EditorObject editorObject, bool isSelected);
 	}
 }

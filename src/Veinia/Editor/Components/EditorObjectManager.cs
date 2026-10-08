@@ -16,6 +16,8 @@ namespace VeiniaFramework.Editor
 		public Action<EditorObject> OnRemove;
 		public Action OnRemoveAll;
 
+		EditToolbarBehaviour editToolbarBehaviour;
+
 		bool drawGizmos = true;
 
 
@@ -23,6 +25,8 @@ namespace VeiniaFramework.Editor
 
 		public override void Initialize()
 		{
+			editToolbarBehaviour = (EditToolbarBehaviour)FindComponentOfType<ToolbarManager>().GetToolbar<EditToolbar>().toolbarBehaviour;
+
 			EditorCheckboxes.Add("Draw Gizmos", defaultValue: true, (e, o) => { drawGizmos = true; }, (e, o) => { drawGizmos = false; });
 			UpdateObjectCountLabel();
 		}
@@ -31,10 +35,10 @@ namespace VeiniaFramework.Editor
 		{
 			var prefab = prefabManager.Find(prefabName);
 
-			IDrawGizmos gizmo = null;
+			IDrawGizmos drawGizmo = null;
 			foreach (var component in prefab.components)
 			{
-				if (component is IDrawGizmos) gizmo = (IDrawGizmos)component;
+				if (component is IDrawGizmos) drawGizmo = (IDrawGizmos)component;
 			}
 
 			var newT = new Transform
@@ -76,7 +80,7 @@ namespace VeiniaFramework.Editor
 				Z = newT.Z,
 				customData = customData ?? prefab.customData,
 				Color = newCol,
-				gizmo = gizmo,
+				drawGizmo = drawGizmo,
 			};
 
 			editorObjects.Add(newEditorObject);
@@ -145,8 +149,12 @@ namespace VeiniaFramework.Editor
 		public void Draw(SpriteBatch sb)
 		{
 			if (drawGizmos)
-				for (int i = 0; i < editorObjects.Count; i++)
-					editorObjects[i].gizmo?.DrawGizmos(sb, gameObject.level, editorObjects[i]);
+			{
+				foreach (var obj in editorObjects)
+				{
+					obj.drawGizmo?.DrawGizmos(sb, gameObject.level, obj, isSelected: editToolbarBehaviour.selectedObjects.Contains(obj));
+				}
+			}
 		}
 	}
 }
