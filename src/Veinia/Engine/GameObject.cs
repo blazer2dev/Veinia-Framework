@@ -11,9 +11,10 @@ namespace VeiniaFramework
 {
 	public class GameObject
 	{
-		public List<Component> components;
-		[Browsable(false)] public Level level;
-		[Browsable(false)] public Transform transform;
+		public List<Component> components { get; private set; }
+		[Browsable(false)] public Level level { get; private set; }
+		[Browsable(false)] public Transform transform { get; private set; }
+		[Browsable(false)] public Guid guid { get; private set; }
 
 		[Browsable(false)]
 		public Body body
@@ -51,10 +52,12 @@ namespace VeiniaFramework
 		private bool isDestroyed;
 
 
-		public GameObject(Transform transform, List<Component> components, Body body = default, string customData = null, bool isStatic = false, bool dontDestroyOnLoad = false)
+		public GameObject(Transform transform, List<Component> components, Body body = default, Guid guid = default, string customData = null, bool isStatic = false, bool dontDestroyOnLoad = false, Level level = null)
 		{
 			transform.gameObject = this;
 			this.transform = transform;
+			this.guid = guid;
+			this.level = level;
 
 			this.components = components;
 			if (body != null) this.body = body;

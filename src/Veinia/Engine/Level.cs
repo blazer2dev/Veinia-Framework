@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.UI;
 using nkast.Aether.Physics2D.Dynamics;
+using System;
 using System.Collections.Generic;
 using VeiniaFramework.Editor;
 
@@ -76,13 +77,12 @@ namespace VeiniaFramework
 		/// <summary>
 		/// Creates an object and spawns it
 		/// </summary>
-		public GameObject Instantiate(Transform transform, List<Component> components, Body body = default, string customData = null, bool isStatic = false, bool dontDestroyOnLoad = false, List<Transform> children = null)
+		public GameObject Instantiate(Transform transform, List<Component> components, Body body = default, Guid guid = default, string customData = null, bool isStatic = false, bool dontDestroyOnLoad = false, List<Transform> children = null)
 		{
 			var sampleBody = body == null ? null : body.DeepClone();
 			if (sampleBody != null) sampleBody.Enabled = true;
 
-			GameObject sample = new GameObject(transform, components, sampleBody, customData, isStatic, dontDestroyOnLoad);
-			sample.level = this;
+			GameObject sample = new GameObject(transform, components, sampleBody, guid, customData, isStatic, dontDestroyOnLoad, this);
 
 			for (int i = 0; i < sample.components.Count; i++)
 			{
@@ -116,7 +116,7 @@ namespace VeiniaFramework
 		}
 		public GameObject Instantiate(Transform transform, GameObject prefab)
 		{
-			return Instantiate(transform, prefab.components.Clone(), prefab.body == null ? null : prefab.body.DeepClone(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
+			return Instantiate(transform, prefab.components.Clone(), prefab.body == null ? null : prefab.body.DeepClone(), prefab.guid, prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
 		}
 		public GameObject Instantiate(GameObject prefab)
 		{
@@ -127,7 +127,7 @@ namespace VeiniaFramework
 				scale = prefab.transform.scale,
 				Z = prefab.transform.Z,
 			};
-			return Instantiate(newT, prefab.components.Clone(), prefab.body == null ? null : prefab.body.DeepClone(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
+			return Instantiate(newT, prefab.components.Clone(), prefab.body == null ? null : prefab.body.DeepClone(), prefab.guid, prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
 		}
 
 		/// <summary>

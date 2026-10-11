@@ -31,7 +31,7 @@ namespace VeiniaFramework.Editor
 			UpdateObjectCountLabel();
 		}
 
-		public EditorObject Spawn(string prefabName, Vector2 position = default, float rotation = default, Vector2 scale = default, float z = default, string customData = null, Color? color = null)
+		public EditorObject Spawn(string prefabName, Vector2 position = default, float rotation = default, Vector2 scale = default, float z = default, string customData = null, Color? color = null, Guid? guid = null)
 		{
 			var prefab = prefabManager.Find(prefabName);
 
@@ -81,6 +81,7 @@ namespace VeiniaFramework.Editor
 				customData = customData ?? prefab.customData,
 				Color = newCol,
 				drawGizmo = drawGizmo,
+				guid = guid ?? Guid.NewGuid()
 			};
 
 			editorObjects.Add(newEditorObject);
@@ -90,7 +91,7 @@ namespace VeiniaFramework.Editor
 
 			return newEditorObject;
 		}
-		public EditorObject Spawn(EditorObject ob) => Spawn(ob.PrefabName, ob.Position, ob.Rotation, ob.Scale, ob.Z, ob.customData, ob.Color);
+		public EditorObject Spawn(EditorObject ob) => Spawn(ob.PrefabName, ob.Position, ob.Rotation, ob.Scale, ob.Z, ob.customData, ob.Color, ob.guid);
 
 		public void Remove(EditorObject editorObject)
 		{

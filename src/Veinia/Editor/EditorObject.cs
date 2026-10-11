@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 
 namespace VeiniaFramework.Editor
@@ -74,6 +75,9 @@ namespace VeiniaFramework.Editor
 		private Color? color;
 
 		public bool ShouldSerializeColor() => color.HasValue && color.Value != Microsoft.Xna.Framework.Color.White;
+
+		[JsonProperty("id")]
+		[Browsable(false)] public Guid? guid { get; set; }
 
 		[Browsable(false)][JsonIgnore] public Sprite EditorPlacedSprite { get; set; }
 

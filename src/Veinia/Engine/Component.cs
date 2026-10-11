@@ -12,6 +12,7 @@ namespace VeiniaFramework
 		[Browsable(false)] public Transform transform;
 		[Browsable(false)] public Level level;
 		[Browsable(false)] public Body body { get { return gameObject.body; } set { gameObject.body = value; } }
+		[Browsable(false)] public Guid guid { get { return gameObject.guid; } }
 		[Browsable(false)] public bool isStatic { get { return gameObject.isStatic; } set { gameObject.isStatic = value; } }
 		[Browsable(false)] public bool dontDestroyOnLoad { get { return gameObject.dontDestroyOnLoad; } set { gameObject.dontDestroyOnLoad = value; } }
 		[Browsable(false)] public string customData { get { return gameObject.customData; } set { gameObject.customData = value; } }
@@ -35,7 +36,7 @@ namespace VeiniaFramework
 		public List<T1> GetAllComponents<T1>() where T1 : Component => gameObject.GetAllComponents<T1>();
 		public Component AddComponent(Component component) => gameObject.AddComponent(component);
 		public void RemoveComponent(Component component) => gameObject.RemoveComponent(component);
-		public GameObject Instantiate(Transform transform, List<Component> components, Body body = default, string customData = null, bool isStatic = false, bool dontDestroyOnLoad = false) => level.Instantiate(transform, components, body, customData, isStatic, dontDestroyOnLoad);
+		public GameObject Instantiate(Transform transform, List<Component> components, Body body = default, string customData = null, Guid guid = default, bool isStatic = false, bool dontDestroyOnLoad = false) => level.Instantiate(transform, components, body, guid, customData, isStatic, dontDestroyOnLoad);
 		public GameObject Instantiate(Transform transform, GameObject newGameObject) => level.Instantiate(transform, newGameObject);
 		public GameObject Instantiate(GameObject newGameObject) => level.Instantiate(newGameObject);
 		public void DestroyGameObject(bool destroyChildObjects = false) => gameObject.DestroyGameObject(destroyChildObjects);
