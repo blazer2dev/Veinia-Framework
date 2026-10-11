@@ -29,7 +29,7 @@ namespace VeiniaFramework
 		public T1 FindComponentOfType<T1>(bool allowNone = false) where T1 : Component => level.FindComponentOfType<T1>(allowNone);
 		public List<T1> FindComponentsOfType<T1>(bool allowNone = false) where T1 : Component => level.FindComponentsOfType<T1>(allowNone);
 		public GameObject FindObjectByData(object match, bool allowNone = false) => level.FindObjectByData(match, allowNone);
-		public GameObject FindObjectByGuid<T1>(Guid guid, bool allowNone = false) => level.FindObjectByGUID(guid, allowNone);
+		public GameObject FindObjectByGuid(Guid guid, bool allowNone = false) => level.FindObjectByGUID(guid, allowNone);
 		public T1 FindComponentByData<T1>(object match, bool allowNone = false) where T1 : Component => level.FindComponentByData<T1>(match, allowNone);
 		public List<T1> FindComponentsByData<T1>(object match, bool allowNone = false) where T1 : Component => level.FindComponentsByData<T1>(match, allowNone);
 		public List<GameObject> FindObjectsByData(object match, bool allowNone = false) => level.FindObjectsByData(match, allowNone);
