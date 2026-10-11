@@ -376,6 +376,24 @@ namespace VeiniaFramework
 		}
 
 		/// <summary>
+		/// Finds a game object of specified guid in the scene.
+		/// </summary>
+		public GameObject FindObjectByGUID(Guid guid, bool allowNone = false)
+		{
+			GameObject found = default;
+
+			foreach (var item in scene)
+			{
+				if (!item.guid.Equals(guid)) continue;
+				else found = item;
+			}
+
+			if (found == null && !allowNone) throw new Exception("FindObjectByGUID - Found no objects matching guid! ");
+
+			return found;
+		}
+
+		/// <summary>
 		/// Finds a component in the scene.
 		/// </summary>
 		public T1 FindComponentOfType<T1>(bool allowNone = false) where T1 : Component
@@ -386,11 +404,11 @@ namespace VeiniaFramework
 			{
 				T1 match = item.GetComponent<T1>();
 				if (match == null) continue;
-				if (found != null && !allowNone) throw new System.Exception("FindComponentOfType<T1> - Found more than one component matching the requirements! " + typeof(T1));
+				if (found != null && !allowNone) throw new Exception("FindComponentOfType<T1> - Found more than one component matching the requirements! " + typeof(T1));
 				else found = match;
 			}
 
-			if (found == null && !allowNone) throw new System.Exception("FindComponentOfType<T1> - Found no components matching requirements! " + typeof(T1));
+			if (found == null && !allowNone) throw new Exception("FindComponentOfType<T1> - Found no components matching requirements! " + typeof(T1));
 
 			return found;
 		}
@@ -411,7 +429,7 @@ namespace VeiniaFramework
 				}
 			}
 
-			if (temp.Count == 0 && !allowNone) throw new System.Exception("FindComponentsOfType<T1> - Found no components matching requirements! " + typeof(T1));
+			if (temp.Count == 0 && !allowNone) throw new Exception("FindComponentsOfType<T1> - Found no components matching requirements! " + typeof(T1));
 
 			return temp;
 		}
@@ -426,11 +444,11 @@ namespace VeiniaFramework
 			foreach (var item in scene)
 			{
 				if (item.customData == null || !item.customData.Equals(match)) continue;
-				if (found != null && !allowNone) throw new System.Exception("FindObjectByData - Found more than one object matching the requirements! Query: " + match);
+				if (found != null && !allowNone) throw new Exception("FindObjectByData - Found more than one object matching the requirements! Query: " + match);
 				else found = item;
 			}
 
-			if (found == null && !allowNone) throw new System.Exception("FindObjectByData - Found no object matching requirements! Query: " + match);
+			if (found == null && !allowNone) throw new Exception("FindObjectByData - Found no object matching requirements! Query: " + match);
 
 			return found;
 		}
@@ -448,7 +466,7 @@ namespace VeiniaFramework
 				temp.Add(item);
 			}
 
-			if (temp.Count == 0 && !allowNone) throw new System.Exception("FindObjectsByData - Found no object matching requirements! Query: " + match);
+			if (temp.Count == 0 && !allowNone) throw new Exception("FindObjectsByData - Found no object matching requirements! Query: " + match);
 
 			return temp;
 		}
