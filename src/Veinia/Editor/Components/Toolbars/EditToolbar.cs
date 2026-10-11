@@ -12,7 +12,7 @@ namespace VeiniaFramework.Editor
 		{
 			var editToolbarBehaviour = (EditToolbarBehaviour)toolbarBehaviour;
 
-			var panel = new Panel { Height = 280 };
+			var panel = new Panel { Height = 305 };
 			displayedToolbarContent = panel;
 
 			var destroySelectedButton = new TextButton { Text = "Destroy Selected [RMB]" };
@@ -76,11 +76,18 @@ namespace VeiniaFramework.Editor
 			};
 			panel.Widgets.Add(editButton);
 
+			var copyGUIDButton = new TextButton { Text = "Copy GUID Selected", Top = 250 };
+			copyGUIDButton.Click += (o, e) =>
+			{
+				editToolbarBehaviour.CopyGUIDSelected();
+			};
+			panel.Widgets.Add(copyGUIDButton);
+
 			//
-			panel.Widgets.Add(new HorizontalSeparator { Top = 250, VerticalAlignment = VerticalAlignment.Top });
+			panel.Widgets.Add(new HorizontalSeparator { Top = 275, VerticalAlignment = VerticalAlignment.Top });
 			//
 
-			var resetCamera = new TextButton { Text = "Reset Camera", Top = 260 };
+			var resetCamera = new TextButton { Text = "Reset Camera", Top = 285 };
 			resetCamera.Click += (o, e) =>
 			{
 				editToolbarBehaviour.ResetCamera();

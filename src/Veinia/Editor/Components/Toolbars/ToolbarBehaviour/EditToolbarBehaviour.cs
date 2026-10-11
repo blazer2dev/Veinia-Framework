@@ -8,6 +8,7 @@ using Myra.Graphics2D.UI.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TextCopy;
 
 namespace VeiniaFramework.Editor
 {
@@ -365,6 +366,8 @@ namespace VeiniaFramework.Editor
 					editWindow = null;
 				};
 		}
+
+		public void CopyGUIDSelected() => Clipboard.SetText(selectedObjects[0].guid.ToString());
 
 		public void EditSingle()
 		{
