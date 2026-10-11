@@ -122,6 +122,9 @@ namespace VeiniaFramework
 				if (!components[i].isEnabled) continue;
 				if (components[i] is IDrawn)
 				{
+					// debug draw guid
+					if (Globals.showGUID && transform.Parent == null) sb.VeiniaTextWorld(level, transform.position, guid.ToString(), size: 16);
+
 					IDrawn drawn = (IDrawn)components[i];
 					drawn.Draw(sb); // makes drawCommands
 				}
