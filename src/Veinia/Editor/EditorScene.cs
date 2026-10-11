@@ -9,7 +9,7 @@ namespace VeiniaFramework.Editor
 	public class EditorScene : Level
 	{
 		public Type editedSceneType;
-		private static bool errorWindowAppeared;
+		private static bool windowAppeared;
 
 		public static Keys TriggerKey = Keys.Tab;
 		public static bool AllowEditorInRelease = false;
@@ -76,13 +76,13 @@ namespace VeiniaFramework.Editor
 			UI.AddComponent(toolbarManager);
 			UI.AddComponent(new EditorManager());
 
-			if (prefabManager == null) ErrorWindow("Warning", "There are no prefabs! Make a class that inherits PrefabManager and add it to Veinia.Initialize()! Check Samples For Reference.");
+			if (prefabManager == null) PopupWindow("Warning", "There are no prefabs! Make a class that inherits PrefabManager and add it to Veinia.Initialize()! Check Samples For Reference.");
 		}
 
-		public static void ErrorWindow(string title, string content)
+		public static void PopupWindow(string title, string content, int? width = null, int? height = null, Color? textColor = null)
 		{
-			if (errorWindowAppeared == true) return;
-			errorWindowAppeared = true;
+			if (windowAppeared == true) return;
+			windowAppeared = true;
 
 			var panel = new Panel();
 
@@ -91,14 +91,20 @@ namespace VeiniaFramework.Editor
 				Title = title,
 				Content = panel,
 				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center
+				VerticalAlignment = VerticalAlignment.Center,
+				DragDirection = DragDirection.None,
+				Width = width ?? 400,
 			};
-			window.DragDirection = DragDirection.None;
-			window.CloseButton.Click += (s, e) => { errorWindowAppeared = false; };
-			window.Width = 400;
+			if (height != null) window.Height = height.Value;
+			window.CloseButton.Click += (s, e) => { windowAppeared = false; };
 
-			var textBox = new TextBox { Text = content, TextColor = Color.Red, Wrap = true };
-			textBox.AcceptsKeyboardFocus = false;
+			var textBox = new TextBox
+			{
+				Text = content,
+				TextColor = textColor ?? Color.White,
+				Wrap = true,
+				AcceptsKeyboardFocus = false
+			};
 
 			panel.Widgets.Add(textBox);
 

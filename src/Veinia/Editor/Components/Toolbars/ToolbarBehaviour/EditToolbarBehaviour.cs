@@ -367,7 +367,15 @@ namespace VeiniaFramework.Editor
 				};
 		}
 
-		public void CopyGUIDSelected() => Clipboard.SetText(selectedObjects[0].guid.ToString());
+		public void CopyGUIDSelected()
+		{
+			if (selectedObjects.Count == 0 || selectedObjects.Count > 1)
+			{
+				EditorScene.PopupWindow("GUID", "Cant copy GUID! Select a singular element and try again!", textColor: Color.Red);
+			}
+			EditorScene.PopupWindow("GUID", "Copied to clipboard...", width: 300, textColor: Color.Blue);
+			Clipboard.SetText(selectedObjects[0].guid.ToString());
+		}
 
 		public void EditSingle()
 		{

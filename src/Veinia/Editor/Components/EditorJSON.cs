@@ -30,7 +30,7 @@ namespace VeiniaFramework.Editor
 		{
 			if (editedLevelName == null || editedLevelName == string.Empty)
 			{
-				EditorScene.ErrorWindow("Warning", "The edited level has no name therefore we dont know how to save it! Add a name in the level constructor!");
+				EditorScene.PopupWindow("Warning", "The edited level has no name therefore we dont know how to save it! Add a name in the level constructor!", textColor: Color.Red);
 				return;
 			}
 
@@ -42,7 +42,7 @@ namespace VeiniaFramework.Editor
 
 			if (OperatingSystem.IsBrowser())
 			{
-				EditorScene.ErrorWindow("Run Console", "Level Printed In Console: " + editedLevelName);
+				EditorScene.PopupWindow("Run Console", "Level Printed In Console: " + editedLevelName, textColor: Color.Blue);
 				Say.Line(savedData);
 				return;
 			}
@@ -52,7 +52,7 @@ namespace VeiniaFramework.Editor
 		{
 			if (editedLevelName == null || editedLevelName == string.Empty)
 			{
-				EditorScene.ErrorWindow("Warning", "The edited level has no name therefore we dont know how to load it! Add a name in the level constructor!");
+				EditorScene.PopupWindow("Warning", "The edited level has no name therefore we dont know how to load it! Add a name in the level constructor!", textColor: Color.Red);
 				return;
 			}
 

@@ -44,7 +44,7 @@ namespace VeiniaFramework.Editor
 
 				else if (Globals.loader.storedLevels.Count == 0)
 				{
-					EditorScene.ErrorWindow("Warning!", "There are no stored levels! Use Globals.loader.storedLevels.Add()! Check Samples For Reference.");
+					EditorScene.PopupWindow("Warning!", "There are no stored levels! Use Globals.loader.storedLevels.Add()! Check Samples For Reference.", textColor: Color.Red);
 				}
 			};
 			panel.Widgets.Add(openLevelSelectButton);
