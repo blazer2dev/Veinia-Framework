@@ -12,7 +12,7 @@ namespace VeiniaFramework
 		[Browsable(false)] public Transform transform;
 		[Browsable(false)] public Level level;
 		[Browsable(false)] public Body body { get { return gameObject.body; } set { gameObject.body = value; } }
-		[Browsable(false)] public Guid guid { get { return gameObject.guid; } }
+		[Browsable(false)] public Guid guid { get { return gameObject.guid; } set { gameObject.guid = value; } }
 		[Browsable(false)] public bool isStatic { get { return gameObject.isStatic; } set { gameObject.isStatic = value; } }
 		[Browsable(false)] public bool dontDestroyOnLoad { get { return gameObject.dontDestroyOnLoad; } set { gameObject.dontDestroyOnLoad = value; } }
 		[Browsable(false)] public string customData { get { return gameObject.customData; } set { gameObject.customData = value; } }

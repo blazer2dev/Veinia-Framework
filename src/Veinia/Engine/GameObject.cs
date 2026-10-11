@@ -14,7 +14,7 @@ namespace VeiniaFramework
 		public List<Component> components { get; private set; }
 		[Browsable(false)] public Level level { get; private set; }
 		[Browsable(false)] public Transform transform { get; private set; }
-		[Browsable(false)] public Guid guid { get; private set; }
+		[Browsable(false)] public Guid guid { get; set; }
 
 		[Browsable(false)]
 		public Body body

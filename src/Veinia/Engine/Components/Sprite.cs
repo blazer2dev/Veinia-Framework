@@ -30,7 +30,7 @@ namespace VeiniaFramework
 
 		public virtual void Draw(SpriteBatch sb)
 		{
-			if (Globals.showGUID) sb.VeiniaTextWorld(level, transform.position, guid.ToString(), size: 16);
+			if (Globals.showGUID && guid != Guid.Empty) sb.VeiniaTextWorld(level, transform.position, guid.ToString(), size: 16);
 
 			level.drawCommands.Add(new DrawCommand
 			{

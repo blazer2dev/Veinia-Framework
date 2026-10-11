@@ -182,6 +182,9 @@ namespace VeiniaFramework
 
 		public void SetParent(Transform parent, bool worldPositionStays = true)
 		{
+			// veinia doesn't support child->parent elements with separate  erete GUIDs
+			guid = Guid.Empty;
+
 			if (this.Parent != null) RemoveParent();
 
 			if (worldPositionStays)
