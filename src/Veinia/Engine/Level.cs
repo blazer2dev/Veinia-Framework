@@ -376,24 +376,6 @@ namespace VeiniaFramework
 		}
 
 		/// <summary>
-		/// Finds a game object of specified guid in the scene.
-		/// </summary>
-		public GameObject FindObjectByGUID(Guid guid, bool allowNone = false)
-		{
-			GameObject found = default;
-
-			foreach (var item in scene)
-			{
-				if (!item.guid.Equals(guid)) continue;
-				else found = item;
-			}
-
-			if (found == null && !allowNone) throw new Exception("FindObjectByGUID - Found no objects matching guid! ");
-
-			return found;
-		}
-
-		/// <summary>
 		/// Finds a component in the scene.
 		/// </summary>
 		public T1 FindComponentOfType<T1>(bool allowNone = false) where T1 : Component
@@ -449,6 +431,24 @@ namespace VeiniaFramework
 			}
 
 			if (found == null && !allowNone) throw new Exception("FindObjectByData - Found no object matching requirements! Query: " + match);
+
+			return found;
+		}
+
+		/// <summary>
+		/// Finds a game object of specified guid in the scene.
+		/// </summary>
+		public GameObject FindObjectByGUID(Guid guid, bool allowNone = false)
+		{
+			GameObject found = default;
+
+			foreach (var item in scene)
+			{
+				if (!item.guid.Equals(guid)) continue;
+				else found = item;
+			}
+
+			if (found == null && !allowNone) throw new Exception("FindObjectByGUID - Found no objects matching guid! ");
 
 			return found;
 		}
