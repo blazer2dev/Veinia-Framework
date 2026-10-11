@@ -326,7 +326,7 @@ namespace VeiniaFramework.Editor
 
 			foreach (var item in clipboard)
 			{
-				var spawnedClipboard = editorObjectManager.Spawn(item);
+				var spawnedClipboard = editorObjectManager.Spawn(item, makeNewGUID: true);
 				selectedObjects.Add(spawnedClipboard);
 			}
 		}

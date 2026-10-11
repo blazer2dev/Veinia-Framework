@@ -448,7 +448,7 @@ namespace VeiniaFramework
 				else found = item;
 			}
 
-			if (found == null && !allowNone) throw new Exception("FindObjectByGUID - Found no objects matching guid! ");
+			if (found == null && !allowNone) throw new Exception("FindObjectByGUID - Found no objects matching guid! - " + guid.ToString());
 
 			return found;
 		}

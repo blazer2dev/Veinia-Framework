@@ -93,7 +93,7 @@ namespace VeiniaFramework.Editor
 
 			return newEditorObject;
 		}
-		public EditorObject Spawn(EditorObject ob) => Spawn(ob.PrefabName, ob.Position, ob.Rotation, ob.Scale, ob.Z, ob.customData, ob.Color, ob.guid);
+		public EditorObject Spawn(EditorObject ob, bool makeNewGUID = false) => Spawn(ob.PrefabName, ob.Position, ob.Rotation, ob.Scale, ob.Z, ob.customData, ob.Color, makeNewGUID ? null : ob.guid);
 
 		public void Remove(EditorObject editorObject)
 		{
