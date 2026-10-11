@@ -258,18 +258,36 @@ namespace VeiniaFramework
 			return new Vector2(rect.Value.Width / 2f, rect.Value.Height / 2f);
 		}
 
-		public static Window MakeEditWindow(this Desktop myraDesktop, object Object, string title = "Object Editor", int width = 350, bool pauseGame = false, bool allowInReleaseMode = false)
+		public static Window MakeEditWindow(this Desktop myraDesktop, object Object, string title = "Object Editor", int width = 400, bool pauseGame = false, bool allowInReleaseMode = false)
 		{
 #if !DEBUG
 			if (!allowInReleaseMode)
 				return null;
 #endif
 
-			var propertyGrid = new PropertyGrid
+			var propertyGrid = new PropertyGrid { Width = width };
+			propertyGrid.CustomWidgetProvider = new Func<Record, object, Widget>((r, obj) =>
 			{
-				Object = Object,
-				Width = width
-			};
+				MyraRenderAsMultilineStringAttribute att;
+				if (r.Type == typeof(string) && (att = r.FindAttribute<MyraRenderAsMultilineStringAttribute>()) != null)
+				{
+					var value = (string)r.GetValue(obj);
+					var textbox = new TextBox()
+					{
+						Text = value,
+						Multiline = true,
+					};
+					textbox.TextChanged += (o, n) =>
+					{
+						r.SetValue(obj, n.NewValue);
+					};
+					return textbox;
+				}
+
+				return null;
+			});
+			propertyGrid.Object = Object;
+
 
 			var editWindow = new Window
 			{

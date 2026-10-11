@@ -58,7 +58,7 @@ namespace VeiniaFramework.Editor
 		Vector2 scale = Vector2.One;
 		public bool ShouldSerializeScale() => scale != Vector2.One;
 
-		[JsonProperty("d", DefaultValueHandling = DefaultValueHandling.Ignore)] public string customData;
+		[JsonProperty("d", DefaultValueHandling = DefaultValueHandling.Ignore)][MyraRenderAsMultilineString] public string customData;
 
 		[JsonConverter(typeof(ColorToHexJsonConverter))]
 		[JsonProperty("c", DefaultValueHandling = DefaultValueHandling.Ignore)]

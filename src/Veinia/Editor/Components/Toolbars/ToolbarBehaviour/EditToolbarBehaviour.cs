@@ -494,7 +494,7 @@ public class MultipleEditData
 	public Vector2 Position = new Vector2(float.NaN, float.NaN);
 	public Vector2 Scale = new Vector2(float.NaN, float.NaN);
 	public float Rotation = float.NaN;
-	public string customData = "<mixed>";
+	[MyraRenderAsMultilineString] public string customData = "<mixed>";
 	public string PrefabName = "<mixed>";
 	public float Z = float.NaN;
 	public Color Color;
