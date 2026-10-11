@@ -7,13 +7,13 @@ using MonoGame.Extended.Tweening;
 using Myra.Graphics2D.UI;
 using nkast.Aether.Physics2D.Dynamics;
 using System;
-using System.ComponentModel;
 
 namespace VeiniaFramework
 {
 	public class Globals
 	{
 		public static bool debugDraw;
+		public static bool showGUID;
 
 		public static Input input = new Input();
 		public static Tweener tweener = new Tweener(); // stops with Time.stop

@@ -27,6 +27,7 @@ namespace VeiniaFramework.Editor
 			 * Drag - LMB 
 			 * Swipe Motion - LShift + LMB
 			 * Debug Draw - F
+			 * Show GUID - Y
 			 * Hide Grid - G
 			 * Mark Layer - Z 
 			 * Save - LCtrl + S
@@ -51,6 +52,7 @@ namespace VeiniaFramework.Editor
 
 			EditorCheckboxes.Add("Debug Draw [X]", defaultValue: Globals.debugDraw, (e, o) => { Globals.debugDraw = true; }, (e, o) => { Globals.debugDraw = false; }, Keys.X);
 			EditorCheckboxes.Add("Use File Encryption", FileManager.UseEncryption, (e, o) => { FileManager.UseEncryption = true; }, (e, o) => { FileManager.UseEncryption = false; });
+			EditorCheckboxes.Add("Show GUID [Y]", defaultValue: Globals.showGUID, (e, o) => { Globals.showGUID = true; }, (e, o) => { Globals.showGUID = false; }, Keys.Y);
 
 			GameObject systems = Instantiate(Transform.Empty, new List<Component>
 			{
