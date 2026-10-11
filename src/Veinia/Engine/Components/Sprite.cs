@@ -30,6 +30,8 @@ namespace VeiniaFramework
 
 		public virtual void Draw(SpriteBatch sb)
 		{
+			if (Globals.showGUID) sb.VeiniaTextWorld(level, transform.position, guid.ToString(), size: 16);
+
 			level.drawCommands.Add(new DrawCommand
 			{
 				command = delegate
@@ -54,7 +56,6 @@ namespace VeiniaFramework
 
 			DestinationSize = new Vector2(this.SourceRectangle.Value.Width, this.SourceRectangle.Value.Height) / (this.pixelsPerUnit / Transform.unitSize);
 		}
-
 
 		public Rectangle rect => new Rectangle((int)transform.screenPos.X, (int)transform.screenPos.Y,
 											   (int)(DestinationSize.X * MathF.Abs(transform.scale.X)),

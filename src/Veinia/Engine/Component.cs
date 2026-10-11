@@ -38,7 +38,7 @@ namespace VeiniaFramework
 		public void RemoveComponent(Component component) => gameObject.RemoveComponent(component);
 		public GameObject Instantiate(Transform transform, List<Component> components, Body body = default, string customData = null, Guid guid = default, bool isStatic = false, bool dontDestroyOnLoad = false) => level.Instantiate(transform, components, body, guid, customData, isStatic, dontDestroyOnLoad);
 		public GameObject Instantiate(Transform transform, GameObject newGameObject) => level.Instantiate(transform, newGameObject);
-		public GameObject Instantiate(GameObject newGameObject) => level.Instantiate(newGameObject);
+		public GameObject Instantiate(GameObject newGameObject, Guid? guid = null) => level.Instantiate(newGameObject, guid);
 		public void DestroyGameObject(bool destroyChildObjects = false) => gameObject.DestroyGameObject(destroyChildObjects);
 	}
 }

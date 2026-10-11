@@ -60,9 +60,9 @@ namespace VeiniaFramework
 			foreach (var item in sceneFile.objects)
 			{
 				var prefab = prefabManager?.Find(item.PrefabName);
-				if (prefab == null) throw new System.Exception("Prefabs that got deleted and are still on " + editorLevelName);
+				if (prefab == null) throw new Exception("Prefabs that got deleted and are still on " + editorLevelName);
 
-				var sample = Instantiate(new Transform { position = item.Position, rotation = item.Rotation, scale = item.Scale, Z = item.Z }, prefab);
+				var sample = Instantiate(new Transform { position = item.Position, rotation = item.Rotation, scale = item.Scale, Z = item.Z }, prefab, item.guid);
 				sample.customData = item.customData;
 
 				if (item.ShouldSerializeColor())
@@ -77,12 +77,12 @@ namespace VeiniaFramework
 		/// <summary>
 		/// Creates an object and spawns it
 		/// </summary>
-		public GameObject Instantiate(Transform transform, List<Component> components, Body body = default, Guid guid = default, string customData = null, bool isStatic = false, bool dontDestroyOnLoad = false, List<Transform> children = null)
+		public GameObject Instantiate(Transform transform, List<Component> components, Body body = default, Guid? guid = null, string customData = null, bool isStatic = false, bool dontDestroyOnLoad = false, List<Transform> children = null)
 		{
 			var sampleBody = body == null ? null : body.DeepClone();
 			if (sampleBody != null) sampleBody.Enabled = true;
 
-			GameObject sample = new GameObject(transform, components, sampleBody, guid, customData, isStatic, dontDestroyOnLoad, this);
+			GameObject sample = new GameObject(transform, components, sampleBody, guid ?? Guid.NewGuid(), customData, isStatic, dontDestroyOnLoad, this);
 
 			for (int i = 0; i < sample.components.Count; i++)
 			{
@@ -107,18 +107,18 @@ namespace VeiniaFramework
 				for (int i = 0; i < children.Count; i++)
 				{
 					var child = children[i];
-					Instantiate(child, child.gameObject).transform.SetParent(transform, worldPositionStays: false);
+					Instantiate(child, child.gameObject, Guid.NewGuid()).transform.SetParent(transform, worldPositionStays: false);
 				}
 			}
 
 			scene.Add(sample);
 			return sample;
 		}
-		public GameObject Instantiate(Transform transform, GameObject prefab)
+		public GameObject Instantiate(Transform transform, GameObject prefab, Guid? guid = null)
 		{
-			return Instantiate(transform, prefab.components.Clone(), prefab.body == null ? null : prefab.body.DeepClone(), prefab.guid, prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
+			return Instantiate(transform, prefab.components.Clone(), prefab.body == null ? null : prefab.body.DeepClone(), guid ?? Guid.NewGuid(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
 		}
-		public GameObject Instantiate(GameObject prefab)
+		public GameObject Instantiate(GameObject prefab, Guid? guid = null)
 		{
 			Transform newT = new Transform
 			{
@@ -127,7 +127,7 @@ namespace VeiniaFramework
 				scale = prefab.transform.scale,
 				Z = prefab.transform.Z,
 			};
-			return Instantiate(newT, prefab.components.Clone(), prefab.body == null ? null : prefab.body.DeepClone(), prefab.guid, prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
+			return Instantiate(newT, prefab.components.Clone(), prefab.body == null ? null : prefab.body.DeepClone(), guid ?? Guid.NewGuid(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
 		}
 
 		/// <summary>

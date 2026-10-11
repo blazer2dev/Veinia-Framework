@@ -49,18 +49,20 @@ namespace VeiniaFramework.Editor
 				Z = z == default ? prefab.transform.Z : z,
 			};
 
+			var newGuid = guid ?? Guid.NewGuid();
+
 
 			Sprite editorPlacedSprite;
 			if (prefab.GetComponent<Sprite>() != null)
 			{
 				var extractedSpriteGameObject = prefab.ExtractComponentToNewGameObject<Sprite>(newT, isStatic: true);
-				editorPlacedSprite = Instantiate(extractedSpriteGameObject).GetComponent<Sprite>();
+				editorPlacedSprite = Instantiate(extractedSpriteGameObject, newGuid).GetComponent<Sprite>();
 				editorPlacedSprite.drawOptions.depthStencilState = null; // ignore stencil for editor as we want to see the sprites always
 			}
 			else // add default prefab sprite
 			{
 				var extracted = prefab.ExtractComponentToNewGameObject<Transform>(Transform.Empty);
-				editorPlacedSprite = (Sprite)Instantiate(extracted).AddComponent(new Sprite("veinia_defaults/prefab_default"));
+				editorPlacedSprite = (Sprite)Instantiate(extracted, newGuid).AddComponent(new Sprite("veinia_defaults/prefab_default"));
 			}
 
 			// grab color from sprite if not overriden
@@ -81,7 +83,7 @@ namespace VeiniaFramework.Editor
 				customData = customData ?? prefab.customData,
 				Color = newCol,
 				drawGizmo = drawGizmo,
-				guid = guid ?? Guid.NewGuid()
+				guid = newGuid
 			};
 
 			editorObjects.Add(newEditorObject);

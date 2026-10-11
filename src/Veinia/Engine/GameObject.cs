@@ -56,8 +56,8 @@ namespace VeiniaFramework
 		{
 			transform.gameObject = this;
 			this.transform = transform;
-			this.guid = guid;
 			this.level = level;
+			this.guid = guid == default ? Guid.NewGuid() : guid;
 
 			this.components = components;
 			if (body != null) this.body = body;
