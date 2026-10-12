@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FontStashSharp;
+using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -27,7 +28,7 @@ namespace VeiniaFramework
 			=> VeiniaPoint(sb, level, Transform.WorldToScreenPos(position), color, size, drawOptions, z);
 
 
-		public static void VeiniaText(this SpriteBatch sb, Level level, Vector2 position, string text, Color? color = null, float size = 32, SpriteFontBase font = null, Vector2 alignment = default, TextStyle textStyle = TextStyle.None, FontSystemEffect fontSystemEffect = FontSystemEffect.None, int effectAmount = 0, DrawOptions drawOptions = default, float z = float.MaxValue)
+		public static void VeiniaText(this SpriteBatch sb, Level level, Vector2 position, string text, Color? color = null, float size = 32, SpriteFontBase font = null, Vector2 alignment = default, bool useRichText = false, TextStyle textStyle = TextStyle.None, FontSystemEffect fontSystemEffect = FontSystemEffect.None, int effectAmount = 0, DrawOptions drawOptions = default, float z = float.MaxValue)
 		{
 			color = color ?? Color.White;
 			if (string.IsNullOrEmpty(text)) return;
@@ -37,27 +38,48 @@ namespace VeiniaFramework
 				command = delegate
 				{
 					var spriteFontBase = font ?? Globals.fontSystem.GetFont(size);
-					var textSize = spriteFontBase.MeasureString(text);
 
-					var origin = new Vector2(
-						textSize.X * (alignment.X + 1f) / 2f,
-						textSize.Y * (alignment.Y + 1f) / 2f
-					);
+					if (useRichText)
+					{
+						var richText = new RichTextLayout
+						{
+							Font = spriteFontBase,
+							Text = text
+						};
 
-					sb.DrawString(spriteFontBase, text, position, color.Value, 0f, origin, textStyle: textStyle, effect: fontSystemEffect, effectAmount: effectAmount);
+						var textSize = richText.Size;
+
+						var origin = new Vector2(
+							textSize.X * (alignment.X + 1f) / 2f,
+							textSize.Y * (alignment.Y + 1f) / 2f
+						);
+
+						richText.Draw(sb, position - origin, color.Value);
+					}
+					else
+					{
+						var textSize = spriteFontBase.MeasureString(text);
+
+						var origin = new Vector2(
+							textSize.X * (alignment.X + 1f) / 2f,
+							textSize.Y * (alignment.Y + 1f) / 2f
+						);
+
+						sb.DrawString(spriteFontBase, text, position, color.Value, 0f, origin, textStyle: textStyle, effect: fontSystemEffect, effectAmount: effectAmount);
+					}
 				},
 				Z = z,
 				drawOptions = drawOptions,
 			});
 		}
 
-		public static void VeiniaTextWorld(this SpriteBatch sb, Level level, Vector2 position, string text, Color? color = null, float size = 32, SpriteFontBase font = null, Vector2 alignment = default, TextStyle textStyle = TextStyle.None, FontSystemEffect fontSystemEffect = FontSystemEffect.None, int effectAmount = 0, DrawOptions drawOptions = default, float z = float.MaxValue)
-			=> VeiniaText(sb, level, Transform.WorldToScreenPos(position), text, color, size, font, alignment, textStyle, fontSystemEffect, effectAmount, drawOptions, z);
+		public static void VeiniaTextWorld(this SpriteBatch sb, Level level, Vector2 position, string text, Color? color = null, float size = 32, SpriteFontBase font = null, Vector2 alignment = default, bool useRichText = false, TextStyle textStyle = TextStyle.None, FontSystemEffect fontSystemEffect = FontSystemEffect.None, int effectAmount = 0, DrawOptions drawOptions = default, float z = float.MaxValue)
+			=> VeiniaText(sb, level, Transform.WorldToScreenPos(position), text, color, size, font, alignment, useRichText, textStyle, fontSystemEffect, effectAmount, drawOptions, z);
 
 
 		public static void VeiniaTextFit(this SpriteBatch sb, Level level, Vector2 position, string text, Vector2 boxSize,
 			Color? color = null, float maxSize = 32f, float minSize = 8f, Vector2 alignment = default,
-			Vector2 padding = default, TextStyle textStyle = TextStyle.None, FontSystemEffect fontSystemEffect = FontSystemEffect.None,
+			Vector2 padding = default, bool useRichText = false, TextStyle textStyle = TextStyle.None, FontSystemEffect fontSystemEffect = FontSystemEffect.None,
 			int effectAmount = 0, DrawOptions drawOptions = default, float z = float.MaxValue)
 		{
 			if (string.IsNullOrWhiteSpace(text)) return;
@@ -150,18 +172,18 @@ namespace VeiniaFramework
 				float lineX = innerLeft + (innerSize.X - lineWidth) * (1f - alignment.X) / 2f;
 
 				sb.VeiniaText(level, new Vector2(lineX, startY + i * finalLineHeight), finalLines[i],
-					color, best, font: finalFont, alignment: new Vector2(-1, -1),
+					color, best, font: finalFont, alignment: new Vector2(-1, -1), useRichText,
 					textStyle: textStyle, fontSystemEffect: fontSystemEffect,
 					effectAmount: effectAmount, drawOptions: drawOptions, z: z);
 			}
 		}
 
 		public static void VeiniaTextFitWorld(this SpriteBatch sb, Level level, Vector2 position, string text, Vector2 boxSize,
-			Color? color = null, float maxSize = 32f, float minSize = 8f, Vector2 alignment = default, Vector2 padding = default,
+			Color? color = null, float maxSize = 32f, float minSize = 8f, Vector2 alignment = default, Vector2 padding = default, bool useRichText = false,
 			TextStyle textStyle = TextStyle.None, FontSystemEffect fontSystemEffect = FontSystemEffect.None,
 			int effectAmount = 0, DrawOptions drawOptions = default, float z = float.MaxValue)
 			=> VeiniaTextFit(sb, level, Transform.WorldToScreenPos(position), text, boxSize, color, maxSize, minSize,
-				alignment, padding * Transform.unitSize, textStyle, fontSystemEffect, effectAmount, drawOptions, z);
+				alignment, padding * Transform.unitSize, useRichText, textStyle, fontSystemEffect, effectAmount, drawOptions, z);
 
 
 		public static void VeiniaLine(this SpriteBatch sb, Level level, Vector2 point1, Vector2 point2, Color? color = null, float thickness = 10, DrawOptions drawOptions = default, float z = float.MaxValue)
