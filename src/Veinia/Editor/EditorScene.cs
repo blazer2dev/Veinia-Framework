@@ -9,7 +9,7 @@ namespace VeiniaFramework.Editor
 	public class EditorScene : Level
 	{
 		public Type editedSceneType;
-		private static bool windowAppeared;
+		private static Window popupWindow;
 
 		public static Keys TriggerKey = Keys.Tab;
 		public static bool AllowEditorInRelease = false;
@@ -83,12 +83,11 @@ namespace VeiniaFramework.Editor
 
 		public static void PopupWindow(string title, string content, int? width = null, int? height = null, Color? textColor = null)
 		{
-			if (windowAppeared == true) return;
-			windowAppeared = true;
+			if (popupWindow != null) return;
 
 			var panel = new Panel();
 
-			var window = new Window
+			popupWindow = new Window
 			{
 				Title = title,
 				Content = panel,
@@ -97,8 +96,8 @@ namespace VeiniaFramework.Editor
 				DragDirection = DragDirection.None,
 				Width = width ?? 400,
 			};
-			if (height != null) window.Height = height.Value;
-			window.CloseButton.Click += (s, e) => { windowAppeared = false; };
+			if (height != null) popupWindow.Height = height.Value;
+			popupWindow.CloseButton.Click += (s, e) => { popupWindow = null; };
 
 			var textBox = new TextBox
 			{
@@ -110,7 +109,14 @@ namespace VeiniaFramework.Editor
 
 			panel.Widgets.Add(textBox);
 
-			window.Show(Globals.myraDesktop, Point.Zero);
+			popupWindow.Show(Globals.myraDesktop, Point.Zero);
+		}
+
+		public static void ClosePopupWindow()
+		{
+			if (popupWindow == null) return;
+			popupWindow.Close();
+			popupWindow = null;
 		}
 	}
 }

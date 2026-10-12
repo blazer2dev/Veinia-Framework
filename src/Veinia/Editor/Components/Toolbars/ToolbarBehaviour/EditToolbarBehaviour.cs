@@ -80,6 +80,7 @@ namespace VeiniaFramework.Editor
 			{
 				editWindow?.Close();
 				filterSelectionWindow?.Close();
+				EditorScene.ClosePopupWindow();
 			}
 
 			if ((Globals.input.GetMouseDown(2) || Globals.input.GetKeyDown(Keys.C)) && !EditorControls.isTextBoxFocused && !Globals.myraDesktop.IsMouseOverGUI)
@@ -372,6 +373,7 @@ namespace VeiniaFramework.Editor
 			if (selectedObjects.Count == 0 || selectedObjects.Count > 1)
 			{
 				EditorScene.PopupWindow("GUID", "Cant copy GUID! Select a singular element and try again!", textColor: Color.Red);
+				return;
 			}
 			EditorScene.PopupWindow("GUID", "Copied to clipboard...", width: 300, textColor: Color.Blue);
 			Clipboard.SetText(selectedObjects[0].guid.ToString());
