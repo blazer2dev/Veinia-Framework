@@ -148,7 +148,7 @@ namespace VeiniaFramework
 		//keyboard
 		public bool GetKey(Keys key)
 		{
-			return (keyboard.IsKeyDown(key));
+			return keyboard.IsKeyDown(key);
 		}
 		public bool GetKeyDown(Keys key)
 		{
@@ -167,7 +167,7 @@ namespace VeiniaFramework
 		}
 		public bool GetButton(Buttons button)
 		{
-			return (gamepad.IsButtonDown(button));
+			return gamepad.IsButtonDown(button);
 		}
 		public bool GetButtonDown(Buttons button)
 		{

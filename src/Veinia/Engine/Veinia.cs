@@ -98,7 +98,7 @@ namespace VeiniaFramework
 			if (!isEditor && !PausedGameWhenInactiveWindow && !Time.stop
 			  || isEditor && !Time.stop && game.IsActive)
 			{
-				if (game.IsActive) Globals.input.Update();
+				Globals.input.Update();
 
 				SingletonManager.Update();
 
