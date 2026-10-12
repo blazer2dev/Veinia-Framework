@@ -106,7 +106,7 @@ namespace VeiniaFramework.Editor
 			if (Globals.input.GetMouseUp(0) && !selectDragging && !editorControls.isDragging && !Globals.myraDesktop.IsMouseOverGUI && !EditorControls.isMouseOverGUIPreviousFrame)
 			{
 				selectedObjects.Clear();
-				editWindow?.Close();
+				// editWindow?.Close();
 
 				filterSelectionWindow?.Close();
 				filterSelectionPoint = screenMousePos;
@@ -131,12 +131,12 @@ namespace VeiniaFramework.Editor
 				{
 					if (!selectedObjects.Contains(item))
 					{
-						if ((PaintingToolbarBehaviour.markLayer && item.PrefabName == PaintingToolbarBehaviour.currentPrefabName))
+						if (PaintingToolbarBehaviour.markLayer && item.PrefabName == PaintingToolbarBehaviour.currentPrefabName)
 							selectedObjects.Add(item);
 
 						else if (!PaintingToolbarBehaviour.markLayer) selectedObjects.Add(item);
 
-						editWindow?.Close();
+						// editWindow?.Close();
 						filterSelectionWindow?.Close();
 					}
 				}
