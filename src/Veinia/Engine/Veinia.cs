@@ -9,6 +9,7 @@ using nkast.Aether.Physics2D.Diagnostics;
 using nkast.Aether.Physics2D.Dynamics;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using VeiniaFramework.Editor;
 
 namespace VeiniaFramework
@@ -23,6 +24,13 @@ namespace VeiniaFramework
 		public static bool PausedGameWhenInactiveWindow { get; private set; }
 		public bool pauseOnUnfocused;
 
+		// used for debug editor enter at startup when holding ctrl
+#if DEBUG
+		[DllImport("user32.dll")]
+		private static extern short GetAsyncKeyState(int vKey);
+		private const int VK_CONTROL = 0x11;
+		private bool IsCtrlDown() => (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
+#endif
 
 		public Veinia(Game game, GraphicsDeviceManager graphicsManager)
 		{
@@ -53,6 +61,9 @@ namespace VeiniaFramework
 			using var stream = TitleContainer.OpenStream(Path.Combine(content.RootDirectory, "veinia_defaults/arial_rounded.ttf"));
 			Globals.fontSystem.AddFont(stream);
 
+#if DEBUG
+			if (IsCtrlDown()) NextFrame.actions.Add(delegate { if (Globals.loader.current != null) ToggleEditor(Globals.loader.current); });
+#endif
 
 			window.ClientSizeChanged += (s, a) => screen.ClientSizeChanged();
 
