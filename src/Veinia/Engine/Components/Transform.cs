@@ -182,6 +182,8 @@ namespace VeiniaFramework
 
 		public void SetParent(Transform parent, bool worldPositionStays = true)
 		{
+			gameObject.hideGUIDDebug = true;
+
 			if (this.Parent != null) RemoveParent();
 
 			if (worldPositionStays)
@@ -198,6 +200,8 @@ namespace VeiniaFramework
 
 		public void RemoveParent()
 		{
+			gameObject.hideGUIDDebug = false;
+
 			if (Parent == null) throw new Exception("RemoveParent() - No Parent Found!");
 
 			Parent.Children.Remove(this);

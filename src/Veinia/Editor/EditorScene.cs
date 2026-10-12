@@ -61,6 +61,7 @@ namespace VeiniaFramework.Editor
 				new EditorJSON(levelName),
 				new EditorObjectManager(prefabManager),
 			});
+			systems.hideGUIDDebug = true;
 
 			var toolbarManager = new ToolbarManager();
 			if (prefabManager != null && prefabManager.editorPrefabs.Count > 0)
@@ -73,6 +74,7 @@ namespace VeiniaFramework.Editor
 				new EditorCheckboxes(),
 				new FPSWindow(),
 			});
+			UI.hideGUIDDebug = true;
 			UI.AddComponent(toolbarManager);
 			UI.AddComponent(new EditorManager());
 
