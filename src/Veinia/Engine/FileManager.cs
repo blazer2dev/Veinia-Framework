@@ -48,7 +48,7 @@ namespace VeiniaFramework
             return UseEncryption ? (byte[])dataToSave : (string)dataToSave;
         }
 
-        public static T1 Load<T1>(string path, string fileName, bool appdataFolder = false)
+        public static T1 Load<T1>(string path, string fileName, bool appdataFolder = false, bool allowNone = false)
         {
             var loadPath = string.IsNullOrWhiteSpace(path) ? fileName : Path.Combine(path, fileName);
             if (appdataFolder) loadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), loadPath);
@@ -67,7 +67,15 @@ namespace VeiniaFramework
             }
             else
             {
-                dataToLoad = UseEncryption ? Encryption.Decrypt(File.ReadAllBytes(loadPath)) : File.ReadAllText(loadPath);
+                try
+                {
+                    dataToLoad = UseEncryption ? Encryption.Decrypt(File.ReadAllBytes(loadPath)) : File.ReadAllText(loadPath);
+                }
+                catch (Exception)
+                {
+                    if (allowNone) return default;
+                    throw;
+                }
 
                 if (!File.Exists(loadPath)) throw new Exception("No File Found! " + loadPath);
             }

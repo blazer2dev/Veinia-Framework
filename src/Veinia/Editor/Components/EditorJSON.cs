@@ -58,7 +58,12 @@ namespace VeiniaFramework.Editor
 
 			editorObjectManager.RemoveAll(); // when changing levels in editor
 
-			sceneFile = FileManager.Load<SceneFile>(LevelsFolder, editedLevelName);
+			sceneFile = FileManager.Load<SceneFile>(LevelsFolder, editedLevelName, allowNone: true);
+			if (sceneFile == null) // if no level file already exists - create one
+			{
+				sceneFile = new SceneFile();
+				return;
+			}
 
 			foreach (var item in sceneFile.objects)
 				editorObjectManager.Spawn(item);
