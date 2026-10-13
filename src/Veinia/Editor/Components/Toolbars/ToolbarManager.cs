@@ -50,6 +50,7 @@ namespace VeiniaFramework.Editor
 			{
 				Title = "Toolbar",
 				Content = tabControl,
+				CloseKey = Keys.None,
 			};
 			window.CloseButton.RemoveFromParent();
 

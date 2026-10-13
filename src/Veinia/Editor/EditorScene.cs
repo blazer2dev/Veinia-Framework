@@ -95,6 +95,7 @@ namespace VeiniaFramework.Editor
 				VerticalAlignment = VerticalAlignment.Center,
 				DragDirection = DragDirection.None,
 				Width = width ?? 400,
+				CloseKey = Keys.None,
 			};
 			if (height != null) popupWindow.Height = height.Value;
 			popupWindow.CloseButton.Click += (s, e) => { popupWindow = null; };

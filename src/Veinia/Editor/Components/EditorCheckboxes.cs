@@ -21,12 +21,13 @@ namespace VeiniaFramework.Editor
 				Title = "Editor Options",
 				Content = panel,
 				HorizontalAlignment = HorizontalAlignment.Right,
-				VerticalAlignment = VerticalAlignment.Top
+				VerticalAlignment = VerticalAlignment.Top,
+				CloseKey = Keys.None,
+				DragDirection = DragDirection.None,
+				Height = 70,
+				Width = 200
 			};
-			window.DragDirection = DragDirection.None;
 			window.CloseButton.RemoveFromParent();
-			window.Height = 70;
-			window.Width = 200;
 
 			window.Show(Globals.myraDesktop, Point.Zero);
 		}

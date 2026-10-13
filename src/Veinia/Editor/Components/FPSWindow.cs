@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D.UI;
 
 namespace VeiniaFramework.Editor
@@ -16,12 +17,13 @@ namespace VeiniaFramework.Editor
 				Title = $"FPS - {Globals.fps.currentFps}",
 				Content = panel,
 				HorizontalAlignment = HorizontalAlignment.Right,
-				VerticalAlignment = VerticalAlignment.Center
+				VerticalAlignment = VerticalAlignment.Center,
+				CloseKey = Keys.None,
+				DragDirection = DragDirection.None,
+				Height = 130,
+				Width = 115
 			};
-			window.DragDirection = DragDirection.None;
 			window.CloseButton.RemoveFromParent();
-			window.Height = 130;
-			window.Width = 115;
 
 			var fpsInputBox = new TextBox { Enabled = Globals.fps.fixedTimestep };
 
