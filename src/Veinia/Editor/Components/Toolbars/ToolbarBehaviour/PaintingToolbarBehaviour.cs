@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace VeiniaFramework.Editor
 {
@@ -63,7 +64,7 @@ namespace VeiniaFramework.Editor
 			else // default prefab sprite
 			{
 				objectPreview = prefab.ExtractComponentToNewGameObject<Transform>(Transform.Empty);
-				objectPreview.AddComponent(new Sprite("veinia_defaults/prefab_default"));
+				objectPreview.AddComponent(new Sprite(Path.Combine("veinia_defaults", "prefab_default")));
 			}
 
 			objectPreview = gameObject.level.Instantiate(objectPreview);

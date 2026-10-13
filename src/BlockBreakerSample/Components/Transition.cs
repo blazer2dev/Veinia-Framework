@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Tweening;
@@ -15,7 +16,7 @@ namespace VeiniaFramework.Samples.BlockBreaker
 		public Transition(Action onTransition, string path = null)
 		{
 			this.action = onTransition;
-			this.texture = Globals.content.Load<Texture2D>(path ?? "veinia_defaults/circle");
+			this.texture = Globals.content.Load<Texture2D>(path ?? Path.Combine("veinia_defaults", "circle"));
 		}
 
 		public override void Initialize()

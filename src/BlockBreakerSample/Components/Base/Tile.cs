@@ -83,7 +83,7 @@ namespace VeiniaFramework.Samples.BlockBreaker
 					DestroyGameObject();
 					Globals.particleWorld.QueueRemove(particles.effect);
 
-					if (FindComponentsOfType<Tile>().Count == 0)
+					if (FindComponentsOfType<Tile>(allowNone: true).Count == 0)
 						FindComponentOfType<UI>().ResetGameWithTransition();
 				});
 		}

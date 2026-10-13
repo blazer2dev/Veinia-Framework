@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace VeiniaFramework.Editor
 {
@@ -62,7 +63,7 @@ namespace VeiniaFramework.Editor
 			else // add default prefab sprite
 			{
 				var extracted = prefab.ExtractComponentToNewGameObject<Transform>(Transform.Empty);
-				editorPlacedSprite = (Sprite)Instantiate(extracted, newGuid).AddComponent(new Sprite("veinia_defaults/prefab_default"));
+				editorPlacedSprite = (Sprite)Instantiate(extracted, newGuid).AddComponent(new Sprite(Path.Combine("veinia_defaults", "prefab_default")));
 			}
 
 			// grab color from sprite if not overriden

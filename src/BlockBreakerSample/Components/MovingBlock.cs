@@ -37,7 +37,7 @@ namespace VeiniaFramework.Samples.BlockBreaker
 			if (hasBeenDestroyed) tween.Cancel();
 		}
 
-		public void DrawGizmos(SpriteBatch sb, Level editorScene, EditorObject editorObject)
+		public void DrawGizmos(SpriteBatch sb, Level editorScene, EditorObject editorObject, bool isSelected)
 		{
 			var gizmoTop = editorObject.EditorPlacedSprite.rect.OffsetByHalf();
 			gizmoTop.Y += 100;

@@ -168,7 +168,7 @@ namespace VeiniaFramework
 		[UnsupportedOSPlatform("browser")]
 		public static Dictionary<string, T1> LoadAll<T1>(this ContentManager content, string contentFolder)
 		{
-			DirectoryInfo dir = new DirectoryInfo(content.RootDirectory + "/" + contentFolder);
+			DirectoryInfo dir = new DirectoryInfo(Path.Combine(content.RootDirectory, contentFolder));
 
 			if (!dir.Exists)
 				throw new DirectoryNotFoundException($"LoadAll({dir}) doesn't exist. Check spelling and make sure the content folder is in the project directory.");
@@ -179,7 +179,7 @@ namespace VeiniaFramework
 			foreach (FileInfo file in files)
 			{
 				string key = Path.GetFileNameWithoutExtension(file.Name);
-				result[key] = content.Load<T1>(contentFolder + "/" + key);
+				result[key] = content.Load<T1>(Path.Combine(contentFolder, key));
 			}
 
 			return result;
@@ -193,7 +193,7 @@ namespace VeiniaFramework
 
 			foreach (string name in assets)
 			{
-				result[name] = content.Load<T>($"{contentFolder}/{name}");
+				result[name] = content.Load<T>(Path.Combine(contentFolder, name));
 			}
 
 			return result;

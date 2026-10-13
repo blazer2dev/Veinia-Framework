@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace VeiniaFramework.Samples.BlockBreaker
 {
@@ -14,7 +15,7 @@ namespace VeiniaFramework.Samples.BlockBreaker
 				new Transform(Vector2.Zero),
 				new List<Component>
 				{
-					new Transition(() => Globals.loader.Reload(),"Sprites/Transition")
+					new Transition(() => Globals.loader.Reload(),Path.Combine("Sprites","Transition"))
 				}, isStatic: false, dontDestroyOnLoad: true);
 		}
 	}

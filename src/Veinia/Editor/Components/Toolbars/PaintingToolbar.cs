@@ -5,6 +5,7 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace VeiniaFramework.Editor
@@ -73,7 +74,7 @@ namespace VeiniaFramework.Editor
 					var sprite = prefab.PrefabGameObject.GetComponent<Sprite>();
 					if (sprite == null)
 					{
-						var texture = Globals.content.Load<Texture2D>("veinia_defaults/prefab_default");
+						var texture = Globals.content.Load<Texture2D>(Path.Combine("veinia_defaults", "prefab_default"));
 						sprite = new Sprite(texture);
 					}
 
