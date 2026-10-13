@@ -381,7 +381,11 @@ namespace VeiniaFramework.Editor
 
 		public void EditSingle()
 		{
-			if (editWindow != null || filterSelectionWindow != null) return;
+			if (editWindow != null || filterSelectionWindow != null)
+			{
+				editWindow?.Close();
+				filterSelectionWindow?.Close();
+			}
 
 			var obj = selectedObjects[0];
 			if (obj == null) return;
@@ -391,7 +395,11 @@ namespace VeiniaFramework.Editor
 
 		public void EditMultiple()
 		{
-			if (editWindow != null || filterSelectionWindow != null) return;
+			if (editWindow != null || filterSelectionWindow != null)
+			{
+				editWindow?.Close();
+				filterSelectionWindow?.Close();
+			}
 
 			var data = new MultipleEditData();
 			var tolerance = 0.0001f;
