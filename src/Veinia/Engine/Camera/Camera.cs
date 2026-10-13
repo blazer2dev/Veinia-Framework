@@ -228,12 +228,8 @@ namespace Apos.Camera
 
 		public void SnapToPixel(int pixelsPerUnit) => SetPosition(GetPosition().SnapToIncrements(1 / (float)pixelsPerUnit));
 
-		public Vector2 GetUnitsInView()
-		{
-			var a = new Vector2(ViewRect.Left, ViewRect.Bottom);
-			var b = new Vector2(ViewRect.Right, ViewRect.Top);
-			return Transform.ScreenToWorldPos(b - a);
-		}
+		public Vector2 GetUnitsInView() => GetUnitsInViewWithNoScale() * Scale;
+		public Vector2 GetUnitsInViewWithNoScale() => new Vector2(VirtualViewport.TargetWidth, VirtualViewport.TargetHeight) / Transform.unitSize;
 
 		public Vector2 GetCorner(CornerLocation cornerLocation, Vector2 padding = default, bool useCameraScale = true, bool useCameraShake = false, bool useCameraPos = true)
 		{

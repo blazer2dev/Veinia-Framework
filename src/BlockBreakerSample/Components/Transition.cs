@@ -30,7 +30,7 @@ namespace VeiniaFramework.Samples.BlockBreaker
 			anim.transform.scale = Vector2.Zero;
 			anim.dontDestroyOnLoad = true;
 
-			tween = Globals.unscaledTweener.TweenTo(target: anim.transform, expression: transform => transform.scale, toValue: Vector2.One * 12, duration: .5f)
+			tween = Globals.unscaledTweener.TweenTo(target: anim.transform, expression: transform => transform.scale, toValue: Globals.camera.GetUnitsInView(), duration: .5f)
 			.Easing(EasingFunctions.CircleOut)
 			.OnEnd((x) =>
 			{
