@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using nkast.Aether.Physics2D.Dynamics;
 using System.Collections.Generic;
+using System.IO;
 
 namespace VeiniaFramework.Samples.BlockBreaker
 {
@@ -62,7 +64,7 @@ namespace VeiniaFramework.Samples.BlockBreaker
 				new Transform { Z = .1f },
 				new List<Component>
 				{
-					new Sprite("Sprites/Paddle", Color.Blue, pixelsPerUnit: 100),
+					new Sprite("Sprites/Paddle", Color.Blue, pixelsPerUnit: 100, options: new DrawOptions{ shader = Globals.content.Load<Effect>(Path.Combine("veinia_defaults", "flash_sprite"))}),
 					new Paddle(),
 				}, isStatic: false);
 
