@@ -18,7 +18,7 @@ namespace VeiniaFramework
 		[Browsable(false)] public string customData { get { return gameObject.customData; } set { gameObject.customData = value; } }
 		[Browsable(false)] public bool isEnabled = true;
 
-		public object Clone() => MemberwiseClone();
+		public virtual object Clone() => MemberwiseClone();
 		public virtual void EarlyInitialize() { }
 		public virtual void Initialize() { }
 		public virtual void Update() { }

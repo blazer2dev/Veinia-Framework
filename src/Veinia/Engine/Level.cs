@@ -97,6 +97,8 @@ namespace VeiniaFramework
 				comp.level = sample.level;
 			}
 
+			scene.Add(sample);
+
 			if (firstFrameCreated)
 			{
 				sample.EarlyInitialize();
@@ -115,12 +117,11 @@ namespace VeiniaFramework
 				}
 			}
 
-			scene.Add(sample);
 			return sample;
 		}
 		public GameObject Instantiate(Transform transform, GameObject prefab, Guid? guid = null)
 		{
-			return Instantiate(transform, prefab.components.Clone(), prefab.body == null ? null : prefab.body.DeepClone(), guid ?? Guid.NewGuid(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
+			return Instantiate(transform, prefab.components.Clone(), prefab.body, guid ?? Guid.NewGuid(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
 		}
 		public GameObject Instantiate(GameObject prefab, Guid? guid = null)
 		{
@@ -131,7 +132,7 @@ namespace VeiniaFramework
 				scale = prefab.transform.scale,
 				Z = prefab.transform.Z,
 			};
-			return Instantiate(newT, prefab.components.Clone(), prefab.body == null ? null : prefab.body.DeepClone(), guid ?? Guid.NewGuid(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
+			return Instantiate(newT, prefab.components.Clone(), prefab.body, guid ?? Guid.NewGuid(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
 		}
 
 		/// <summary>
