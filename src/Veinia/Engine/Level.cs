@@ -26,6 +26,10 @@ namespace VeiniaFramework
 		public Panel Myra = new Panel();
 		public PrefabManager prefabManager { get; set; }
 		public string levelName;
+		private VirtualCamera defaultVirtualCamera = new VirtualCamera
+		{
+			transformMatrix = () => Globals.camera.GetView(),
+		};
 
 		public Level(string levelName) => this.levelName = levelName;
 		public Level() { }
@@ -216,10 +220,7 @@ namespace VeiniaFramework
 			// set default transformMatrix
 			if (drawOptions.virtualCamera == null)
 			{
-				drawOptions.virtualCamera = new VirtualCamera
-				{
-					transformMatrix = () => Globals.camera.GetView(),
-				};
+				drawOptions.virtualCamera = defaultVirtualCamera;
 			}
 			else if (drawOptions.virtualCamera.transformMatrix == null)
 			{
@@ -291,6 +292,15 @@ namespace VeiniaFramework
 							if (b.drawOptions.blendState == null) return 1;
 							int blendCompare = a.drawOptions.blendState.GetHashCode().CompareTo(b.drawOptions.blendState.GetHashCode());
 							if (blendCompare != 0) return blendCompare;
+						}
+
+						// compare rasterizerState
+						if (a.drawOptions.rasterizerState != b.drawOptions.rasterizerState)
+						{
+							if (a.drawOptions.rasterizerState == null) return -1;
+							if (b.drawOptions.rasterizerState == null) return 1;
+							int rasterizerCompare = a.drawOptions.rasterizerState.GetHashCode().CompareTo(b.drawOptions.rasterizerState.GetHashCode());
+							if (rasterizerCompare != 0) return rasterizerCompare;
 						}
 
 						// compare virtualCamera
