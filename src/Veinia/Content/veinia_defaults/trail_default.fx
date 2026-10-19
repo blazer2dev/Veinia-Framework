@@ -8,48 +8,40 @@
 #endif
 
 matrix WorldViewProjection;
-
 float4 GlobalColor;
 
-// Vertex input
 struct VertexShaderInput
 {
     float4 Position : POSITION0;
-    float Visibility : TEXCOORD0; // single float for fade
+    float2 TextureCoordinate : TEXCOORD0;
+    float Visibility : TEXCOORD1;
 };
 
-// Vertex output
 struct VertexShaderOutput
 {
     float4 Position : SV_POSITION;
     float4 Color : COLOR0;
 };
 
-// Vertex Shader
 VertexShaderOutput MainVS(VertexShaderInput input)
 {
     VertexShaderOutput output;
 
-    // Transform to clip space
     output.Position = mul(input.Position, WorldViewProjection);
 
-    // Visibility control
-    float vis = saturate(input.Visibility * 3 - 1);
-
-    // Output color with fade
-    output.Color = GlobalColor * vis;
+    // TrailVertex.Visibility is already a normalized opacity value. Keeping
+    // the fade in alpha lets the render state's alpha blending do the work.
+    float visibility = saturate(input.Visibility);
+    output.Color = float4(GlobalColor.rgb, GlobalColor.a * visibility);
 
     return output;
 }
 
-// Pixel Shader
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    // Just output the color from the vertex shader
     return input.Color;
 }
 
-// Technique
 technique AmbientTrail
 {
     pass P0

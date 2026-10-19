@@ -5,273 +5,390 @@ using System.IO;
 
 namespace VeiniaFramework
 {
-	public class Trail : Component, IDrawn
+	public class Trail : Component, IDrawn, IDisposable
 	{
-		//our buffers
-		[ResetOnInstantiate]
-		private DynamicVertexBuffer _vBuffer;
-		[ResetOnInstantiate]
-		private IndexBuffer _iBuffer;
+		[ResetOnInstantiate] private DynamicVertexBuffer _vBuffer;
+		[ResetOnInstantiate] private IndexBuffer _iBuffer;
+		[ResetOnInstantiate] private TrailVertex[] _vertices;
+		[ResetOnInstantiate] private TrailPoint[] _points;
+		[ResetOnInstantiate] private float[] _pointDistances;
+		[ResetOnInstantiate] private int _pointCount;
+		[ResetOnInstantiate] private Vector3 _emissionPosition;
+		[ResetOnInstantiate] private int _segments;
 
-		[ResetOnInstantiate]
-		private TrailVertex[] vertices;
-
-		//How many segments are already initialized?
-		[ResetOnInstantiate]
-		private int _segmentsUsed = 0;
-
-		//How many segments does our strip have?
-		private int _segments;
-
-		//How long is each segment in world units?
+		private const float DefaultMinVertexDistance = .2f;
+		private int _initialSegments;
+		private float _length;
 		private float _segmentLength;
-
-		//The world coordinates of our last static segment end
-		[ResetOnInstantiate]
-		private Vector3 _lastSegmentPosition;
-
-		//If we fade out – over how many segments?
-		private int fadeOutSegments = 4;
-
-		private float _width = 1;
-
-		private float _z = 0;
-
-		private float _minLength = 0.01f;
-
+		private float _width;
+		private float? _lifetime;
+		private float? _fadeOffLength;
+		private float _z;
 		private Effect _effect;
-		private BasicEffect basicEffect;
-
+		private BasicEffect _basicEffect;
 		private bool _setWorldViewProjection;
+		private bool _usesDefaultEffect;
+		private Vector4 _globalColor;
 
-		public Trail(float segmentLength = .2f, int segments = 20, float width = .4f, Color? color = null, Effect effect = null, float z = 0, bool setWorldViewProjection = false)
+		private struct TrailPoint
 		{
-			_segmentLength = segmentLength * Transform.unitSize;
-			_segments = segments;
-			_width = width * Transform.unitSize / 2;
-			_setWorldViewProjection = setWorldViewProjection;
-			_z = z;
+			public Vector3 Position;
+			public float Age;
+		}
 
-			basicEffect = Globals.shapeDrawing.basicEffect;
+		/// <summary>
+		/// The amount of time points remain visible. Null disables time-based
+		/// expiration and uses the distance-limited history instead.
+		/// </summary>
+		public float? Lifetime
+		{
+			get => _lifetime;
+			set
+			{
+				if (value.HasValue && value.Value <= 0)
+					throw new ArgumentOutOfRangeException(nameof(value), "Trail lifetime must be greater than zero.");
+
+				_lifetime = value;
+				if (_points == null)
+					return;
+
+				RemoveExpiredPoints();
+				RebuildVertices();
+			}
+		}
+
+		public float? FadeOffLength
+		{
+			get => _fadeOffLength.HasValue ? _fadeOffLength.Value / Transform.unitSize : null;
+			set
+			{
+				if (value.HasValue && value.Value <= 0)
+					throw new ArgumentOutOfRangeException(nameof(value), "Fade-off length must be greater than zero.");
+
+				_fadeOffLength = value.HasValue ? value.Value * Transform.unitSize : null;
+				if (_points != null)
+					RebuildVertices();
+			}
+		}
+
+		public float Length => _length / Transform.unitSize;
+		public float SegmentLength => _segmentLength / Transform.unitSize;
+		public float MinVertexDistance => SegmentLength;
+		public float Width => _width * 2f / Transform.unitSize;
+
+		public Trail(float length = 4f, float width = .4f, Color? color = null, Effect effect = null, float z = 0, bool setWorldViewProjection = false, float? lifetime = null, float? fadeOffLength = null)
+		{
+			if (length <= 0)
+				throw new ArgumentOutOfRangeException(nameof(length), "Trail length must be greater than zero.");
+			if (width < 0)
+				throw new ArgumentOutOfRangeException(nameof(width), "Trail width cannot be negative.");
+			if (lifetime.HasValue && lifetime.Value <= 0)
+				throw new ArgumentOutOfRangeException(nameof(lifetime), "Trail lifetime must be greater than zero.");
+			if (fadeOffLength.HasValue && fadeOffLength.Value <= 0)
+				throw new ArgumentOutOfRangeException(nameof(fadeOffLength), "Fade-off length must be greater than zero.");
+
+			_length = length * Transform.unitSize;
+			_segmentLength = DefaultMinVertexDistance * Transform.unitSize;
+			_initialSegments = Math.Max(2, (int)Math.Ceiling(length / DefaultMinVertexDistance) + 1);
+			_width = width * Transform.unitSize / 2f;
+			_lifetime = lifetime;
+			_fadeOffLength = fadeOffLength.HasValue ? fadeOffLength.Value * Transform.unitSize : null;
+			_z = z;
+			_setWorldViewProjection = setWorldViewProjection;
+			_basicEffect = Globals.shapeDrawing.basicEffect;
 
 			if (effect == null)
 			{
 				_effect = Globals.content.Load<Effect>(Path.Combine("veinia_defaults", "trail_default"));
-				_effect.Parameters["GlobalColor"].SetValue(color == null ? new Vector4(1, 1, 1, 1) : color.Value.ToVector4());
-
+				_globalColor = (color ?? Color.White).ToVector4();
+				_effect.Parameters["GlobalColor"]?.SetValue(_globalColor);
 				_setWorldViewProjection = true;
+				_usesDefaultEffect = true;
+			}
+			else
+			{
+				_effect = effect;
+				_globalColor = Color.White.ToVector4();
+				_usesDefaultEffect = false;
 			}
 		}
 
 		public override void Initialize()
 		{
-			// _lastSegmentPosition = Globals.input.GetMouseScreenPosition().ToVector3();
-
-			_vBuffer = new DynamicVertexBuffer(Globals.graphicsDevice, TrailVertex.VertexDeclaration, _segments * 2, BufferUsage.None);
+			_segments = _initialSegments;
+			_vBuffer = new DynamicVertexBuffer(Globals.graphicsDevice, TrailVertex.VertexDeclaration, _segments * 2, BufferUsage.WriteOnly);
 			_iBuffer = new IndexBuffer(Globals.graphicsDevice, IndexElementSize.SixteenBits, (_segments - 1) * 6, BufferUsage.WriteOnly);
 
-			vertices = new TrailVertex[_segments * 2];
+			_vertices = new TrailVertex[_segments * 2];
+			_points = new TrailPoint[_segments];
+			_pointDistances = new float[_segments];
+			_pointCount = 0;
+			Vector3 initialPosition = GetCurrentPosition();
+			_emissionPosition = initialPosition;
 
-			Update(); // make sure to update before draw
 			FillIndexBuffer();
+			AppendPoint(initialPosition);
+			RebuildVertices();
 		}
 
 		private void FillIndexBuffer()
 		{
-			short[] bufferArray = new short[(_segments - 1) * 6];
-			for (var i = 0; i < _segments - 1; i++)
+			var indices = new short[(_segments - 1) * 6];
+			for (int i = 0; i < _segments - 1; i++)
 			{
-				bufferArray[0 + i * 6] = (short)(0 + i * 2);
-				bufferArray[1 + i * 6] = (short)(1 + i * 2);
-				bufferArray[2 + i * 6] = (short)(2 + i * 2);
-				bufferArray[3 + i * 6] = (short)(1 + i * 2);
-				bufferArray[4 + i * 6] = (short)(3 + i * 2);
-				bufferArray[5 + i * 6] = (short)(2 + i * 2);
+				int vertex = i * 2;
+				indices[i * 6 + 0] = (short)vertex;
+				indices[i * 6 + 1] = (short)(vertex + 1);
+				indices[i * 6 + 2] = (short)(vertex + 2);
+				indices[i * 6 + 3] = (short)(vertex + 1);
+				indices[i * 6 + 4] = (short)(vertex + 3);
+				indices[i * 6 + 5] = (short)(vertex + 2);
 			}
 
-			_iBuffer.SetData(bufferArray);
+			_iBuffer.SetData(indices);
+		}
+
+		public override void Update()
+		{
+			if (_points == null || _vertices == null)
+				return;
+
+			float deltaTime = Math.Max(0f, Time.deltaTime);
+			for (int i = 0; i < _pointCount; i++)
+				_points[i].Age += deltaTime;
+
+			RemoveExpiredPoints();
+
+			Vector3 currentPosition = GetCurrentPosition();
+			if (_pointCount == 0)
+			{
+				_emissionPosition = currentPosition;
+				AppendPoint(currentPosition);
+			}
+			else
+			{
+				Vector3 offset = currentPosition - _emissionPosition;
+				if (offset.LengthSquared() >= _segmentLength * _segmentLength)
+				{
+					AppendPoint(currentPosition);
+					_emissionPosition = currentPosition;
+				}
+				else
+				{
+					_points[_pointCount - 1].Position = currentPosition;
+				}
+			}
+
+			RebuildVertices();
+		}
+
+		private Vector3 GetCurrentPosition() => transform.screenPos.ToVector3();
+
+		private void AppendPoint(Vector3 position)
+		{
+			if (_pointCount == _segments && !_lifetime.HasValue)
+			{
+				// With no lifetime, keep a fixed distance history like the original
+				// trail and fade the points that are about to leave it.
+				Array.Copy(_points, 1, _points, 0, _segments - 1);
+				_pointCount--;
+			}
+			else
+			{
+				EnsureCapacity(_pointCount + 1);
+			}
+
+			_points[_pointCount++] = new TrailPoint
+			{
+				Position = position,
+				Age = 0f,
+			};
+		}
+
+		private void EnsureCapacity(int requiredPointCount)
+		{
+			if (requiredPointCount <= _segments)
+				return;
+
+			int newSegments = Math.Max(requiredPointCount, _segments * 2);
+			if (newSegments > 32768)
+				throw new InvalidOperationException("Trail exceeded the maximum point capacity for a 16-bit index buffer.");
+
+			var oldVertexBuffer = _vBuffer;
+			var oldIndexBuffer = _iBuffer;
+
+			_segments = newSegments;
+			Array.Resize(ref _points, _segments);
+			Array.Resize(ref _pointDistances, _segments);
+			Array.Resize(ref _vertices, _segments * 2);
+
+			_vBuffer = new DynamicVertexBuffer(Globals.graphicsDevice, TrailVertex.VertexDeclaration, _segments * 2, BufferUsage.WriteOnly);
+			_iBuffer = new IndexBuffer(Globals.graphicsDevice, IndexElementSize.SixteenBits, (_segments - 1) * 6, BufferUsage.WriteOnly);
+			FillIndexBuffer();
+
+			oldVertexBuffer?.Dispose();
+			oldIndexBuffer?.Dispose();
+		}
+
+		private void RemoveExpiredPoints()
+		{
+			if (!_lifetime.HasValue)
+				return;
+
+			int firstLivePoint = 0;
+			while (firstLivePoint < _pointCount && _points[firstLivePoint].Age >= _lifetime.Value)
+				firstLivePoint++;
+
+			if (firstLivePoint == 0)
+				return;
+
+			int livePointCount = _pointCount - firstLivePoint;
+			if (livePointCount > 0)
+				Array.Copy(_points, firstLivePoint, _points, 0, livePointCount);
+			_pointCount = livePointCount;
+		}
+
+		private void RebuildVertices()
+		{
+			float trailDistance = 0f;
+			if (_pointCount > 0)
+				_pointDistances[0] = 0f;
+
+			for (int i = 1; i < _pointCount; i++)
+			{
+				trailDistance += Vector3.Distance(_points[i - 1].Position, _points[i].Position);
+				_pointDistances[i] = trailDistance;
+			}
+
+			float fadeDistance = _fadeOffLength ?? trailDistance;
+			for (int i = 0; i < _pointCount; i++)
+			{
+				Vector3 tangent = GetTangent(i);
+				Vector3 normal = Vector3.Cross(Vector3.UnitZ, tangent);
+				if (normal.LengthSquared() < 0.000001f)
+					normal = Vector3.UnitY;
+				else
+				normal.Normalize();
+
+				float u = _pointCount == 1 ? 1f : (float)i / (_pointCount - 1);
+				float distanceVisibility = fadeDistance > 0.000001f
+					? MathHelper.Clamp(_pointDistances[i] / fadeDistance, 0f, 1f)
+					: 1f;
+				float lifetimeVisibility = _lifetime.HasValue
+					? MathHelper.Clamp(1f - _points[i].Age / _lifetime.Value, 0f, 1f)
+					: 1f;
+
+				if (_fadeOffLength.HasValue)
+					// Fade lifetime influence toward full opacity at the end of the
+					// fade-off region so there is no jump to 100% at its boundary.
+					lifetimeVisibility = MathHelper.Lerp(lifetimeVisibility, 1f, distanceVisibility);
+
+				float visibility = lifetimeVisibility * distanceVisibility;
+
+				Vector3 center = _points[i].Position;
+
+				_vertices[i * 2] = new TrailVertex
+				{
+					Position = center + normal * _width,
+					TextureCoordinate = new Vector2(u, 0f),
+					Visibility = visibility,
+				};
+				_vertices[i * 2 + 1] = new TrailVertex
+				{
+					Position = center - normal * _width,
+					TextureCoordinate = new Vector2(u, 1f),
+					Visibility = visibility,
+				};
+			}
+		}
+
+		private Vector3 GetTangent(int pointIndex)
+		{
+			Vector3 tangent;
+			if (_pointCount < 2)
+				tangent = Vector3.UnitX;
+			else if (pointIndex == 0)
+				tangent = _points[1].Position - _points[0].Position;
+			else if (pointIndex == _pointCount - 1)
+				tangent = _points[pointIndex].Position - _points[pointIndex - 1].Position;
+			else
+				tangent = _points[pointIndex + 1].Position - _points[pointIndex - 1].Position;
+
+			if (tangent.LengthSquared() < 0.000001f)
+			{
+				for (int i = pointIndex - 1; i >= 0; i--)
+				{
+					tangent = _points[i + 1].Position - _points[i].Position;
+					if (tangent.LengthSquared() >= 0.000001f)
+						break;
+				}
+			}
+
+			if (tangent.LengthSquared() < 0.000001f)
+				tangent = Vector3.UnitX;
+			else
+				tangent.Normalize();
+
+			return tangent;
 		}
 
 		public void Dispose()
 		{
 			_vBuffer?.Dispose();
 			_iBuffer?.Dispose();
-		}
-
-		public override void Update()
-		{
-			Vector3 newPosition = transform.screenPos.ToVector3();
-			float visibility = 1;
-
-			//Initialize the first segment, we have no indication for the direction, so just displace the 2 vertices to the left/right
-			if (_segmentsUsed == 0)
-			{
-				vertices[0].Position = _lastSegmentPosition + Vector3.Left;
-				vertices[0].TextureCoordinate = new Vector2(0, 0);
-
-				vertices[1].Position = _lastSegmentPosition + Vector3.Right;
-				vertices[1].TextureCoordinate = new Vector2(0, 1);
-
-				_segmentsUsed = 1;
-			}
-
-			Vector3 directionVector = newPosition - _lastSegmentPosition;
-			float directionLength = directionVector.Length();
-
-			//If the distance between our newPosition and our last segment is greater than our assigned
-			// _segmentLength we have to delete the oldest segment and make a new one at the other end
-			if (directionLength > _segmentLength)
-			{
-				Vector3 normalizedVector = directionVector / directionLength;
-
-				//normal to the direction. In our case the trail always faces the sky so we can use the cross product
-				//with (0,0,1)
-				Vector3 normalVector = Vector3.Cross(Vector3.UnitZ, normalizedVector);
-
-				//how many segments are we in?
-				int currentSegment = _segmentsUsed;
-
-				//if we are already at max #segments we need to delete the last one
-				if (currentSegment >= _segments - 1)
-				{
-					ShiftDownSegments();
-				}
-
-				else
-				{
-					_segmentsUsed++;
-				}
-
-				//Update our latest segment with the new position
-				vertices[currentSegment * 2].Position = newPosition + normalVector * _width;
-				vertices[currentSegment * 2].TextureCoordinate = new Vector2(1, 0);
-				vertices[currentSegment * 2 + 1].Position = newPosition - normalVector * _width;
-				vertices[currentSegment * 2 + 1].TextureCoordinate = new Vector2(1, 1);
-
-				//Fade out
-				//We can’t have more fadeout segments than initialized segments!
-				int max_fade_out_segments = Math.Min(fadeOutSegments, currentSegment);
-
-				for (var i = 0; i < max_fade_out_segments; i++)
-				{
-					//Linear function y = 1/max * x – percent. Need to check with prior visibility, might be lower (if car jumps for example)
-					float visibilityTerm = Math.Min(1.0f / max_fade_out_segments * i, DecodeVisibility(vertices[i * 2].Visibility));
-					visibilityTerm = EncodeVisibility(visibilityTerm);
-
-					vertices[i * 2].Visibility = visibilityTerm;
-					vertices[i * 2 + 1].Visibility = visibilityTerm;
-				}
-
-				//Our last segment’s position is the current position now. Go on from there
-				_lastSegmentPosition = newPosition;
-			}
-			//If we are not further than a segment’s length but further than the minimum distance to change something
-			//(We don’t wantto recalculate everything when our target didn’t move from the last segment)
-			//Alternatively we can save the last position where we calculated stuff and have a minimum distance from that, too.
-			else if (directionLength > _minLength)
-			{
-				Vector3 normalizedVector = directionVector / directionLength;
-
-				Vector3 normalVector = Vector3.Cross(Vector3.UnitZ, normalizedVector);
-
-				int currentSegment = _segmentsUsed;
-
-				vertices[currentSegment * 2].Position = newPosition + normalVector * _width;
-				vertices[currentSegment * 2].TextureCoordinate = new Vector2(1, 0);
-				vertices[currentSegment * 2].Visibility = EncodeVisibility(visibility);
-				vertices[currentSegment * 2 + 1].Position = newPosition - normalVector * _width;
-				vertices[currentSegment * 2 + 1].TextureCoordinate = new Vector2(1, 1);
-				vertices[currentSegment * 2 + 1].Visibility = EncodeVisibility(visibility);
-
-				//We have to adjust the orientation of the last vertices too, so we can have smooth curves!
-				if (currentSegment >= 2)
-				{
-					Vector3 directionVectorOld = vertices[(currentSegment - 1) * 2].Position - vertices[(currentSegment - 2) * 2].Position;
-
-					directionVectorOld.Normalize();
-					Vector3 normalVectorOld = Vector3.Cross(Vector3.UnitZ, directionVectorOld);
-
-					normalVectorOld = normalVectorOld + (1 - MathHelper.Clamp(Vector3.Dot(normalVectorOld, normalVector), 0, 1)) * normalVector;
-
-					normalVectorOld.Normalize();
-
-					vertices[(currentSegment - 1) * 2].Position = _lastSegmentPosition + normalVectorOld * _width;
-					vertices[(currentSegment - 1) * 2 + 1].Position = _lastSegmentPosition - normalVectorOld * _width;
-				}
-
-				// Visibility
-
-				//Fade out the trail to the back
-				int max_fade_out_segments = Math.Min(fadeOutSegments, currentSegment);
-
-				//Get the percentage of advance towards the next _segmentLength when we need to change vertices again
-				float percent = directionLength / _segmentLength / max_fade_out_segments;
-
-				for (var i = 0; i < max_fade_out_segments; i++)
-				{
-					//Linear function y = 1/max * x – percent. Need to check with prior visibility, might be lower (if car jumps for example)
-					float visibilityTerm = Math.Min(1.0f / max_fade_out_segments * i - percent, DecodeVisibility(vertices[i * 2].Visibility));
-					visibilityTerm = EncodeVisibility(visibilityTerm);
-
-					vertices[i * 2].Visibility = visibilityTerm;
-					vertices[i * 2 + 1].Visibility = visibilityTerm;
-				}
-
-			}
-		}
-
-		private float EncodeVisibility(float visibility) => (visibility + 1) / 3.0f;
-		private float DecodeVisibility(float visibility) => (visibility * 3) - 1.0f;
-		private void ShiftDownSegments()
-		{
-			for (var i = 0; i < _segments - 1; i++)
-			{
-				vertices[i * 2] = vertices[i * 2 + 2];
-				vertices[i * 2 + 1] = vertices[i * 2 + 3];
-			}
+			_pointCount = 0;
+			_vBuffer = null;
+			_iBuffer = null;
 		}
 
 		public void Draw(SpriteBatch sb)
 		{
+			if (_pointCount < 2 || level == null || _vBuffer == null || _iBuffer == null)
+				return;
+
 			level.drawCommands.Add(new DrawCommand
 			{
 				command = delegate
 				{
-					if (_setWorldViewProjection) _effect.Parameters["WorldViewProjection"].SetValue(basicEffect.View * basicEffect.Projection);
+					if (_pointCount < 2 || _vBuffer == null || _iBuffer == null)
+						return;
 
-					_vBuffer.SetData(vertices);
+					if (_usesDefaultEffect)
+						_effect.Parameters["GlobalColor"]?.SetValue(_globalColor);
+
+					if (_setWorldViewProjection)
+						_effect.Parameters["WorldViewProjection"]?.SetValue(_basicEffect.View * _basicEffect.Projection);
+
+					_vBuffer.SetData(_vertices, 0, _pointCount * 2, SetDataOptions.Discard);
 					Globals.graphicsDevice.SetVertexBuffer(_vBuffer);
 					Globals.graphicsDevice.Indices = _iBuffer;
 
+					int primitiveCount = (_pointCount - 1) * 2;
 					foreach (var pass in _effect.CurrentTechnique.Passes)
 					{
 						pass.Apply();
-						Globals.graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, _segmentsUsed * 2);
+						Globals.graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, primitiveCount);
 					}
 				},
 				drawWithoutSpriteBatch = true,
 				Z = _z,
+				drawOptions = new DrawOptions
+				{
+					shader = _effect,
+					blendState = BlendState.NonPremultiplied,
+					rasterizerState = RasterizerState.CullNone,
+				},
 			});
 		}
 	}
 
-
 	public struct TrailVertex
 	{
-		// Stores the starting position of the particle.
 		public Vector3 Position;
-
-		// Stores TexCoords
 		public Vector2 TextureCoordinate;
-
-		// Visibility term
+		// Normalized opacity. The trail shader consumes this value directly.
 		public float Visibility;
-		public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(
-			new VertexElement(0, VertexElementFormat.Vector3,
-			VertexElementUsage.Position, 0),
-			new VertexElement(12, VertexElementFormat.Vector2,
-			VertexElementUsage.TextureCoordinate, 0),
-			new VertexElement(20, VertexElementFormat.Single,
-			VertexElementUsage.TextureCoordinate, 0));
+
+		public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0), new VertexElement(12, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0), new VertexElement(20, VertexElementFormat.Single, VertexElementUsage.TextureCoordinate, 1));
 	}
 }

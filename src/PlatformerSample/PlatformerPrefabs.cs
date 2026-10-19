@@ -15,6 +15,7 @@ namespace VeiniaFramework.Samples.Platformer
 			Add("Player", new GameObject(new Transform { Z = .5f }, new List<Component>
 			{
 				new Sprite(Path.Combine("Sprites", "Player"), Color.GreenYellow, pixelsPerUnit: 16),
+				new Trail(color: Color.GreenYellow, length: 5, fadeOffLength: 1, lifetime: .5f),
 				new Player(),
 			}, isStatic: false), prefabTab: 0);
 
