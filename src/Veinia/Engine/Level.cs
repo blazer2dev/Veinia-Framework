@@ -112,8 +112,12 @@ namespace VeiniaFramework
 			{
 				for (int i = 0; i < children.Count; i++)
 				{
-					var child = children[i];
-					Instantiate(child, child.gameObject, Guid.NewGuid()).transform.SetParent(transform, worldPositionStays: false);
+					var sourceChild = children[i];
+					if (sourceChild == null || sourceChild.gameObject == null)
+						throw new InvalidOperationException("A prefab child must belong to a GameObject before it can be instantiated.");
+
+					var childTransform = (Transform)sourceChild.Clone();
+					Instantiate(childTransform, sourceChild.gameObject, Guid.NewGuid()).transform.SetParent(transform, worldPositionStays: false);
 				}
 			}
 
@@ -121,7 +125,7 @@ namespace VeiniaFramework
 		}
 		public GameObject Instantiate(Transform transform, GameObject prefab, Guid? guid = null)
 		{
-			return Instantiate(transform, prefab.components.Clone(), prefab.body, guid ?? Guid.NewGuid(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
+			return Instantiate(transform, prefab.components.Clone(), prefab.body, guid ?? Guid.NewGuid(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children);
 		}
 		public GameObject Instantiate(GameObject prefab, Guid? guid = null)
 		{
@@ -132,7 +136,7 @@ namespace VeiniaFramework
 				scale = prefab.transform.scale,
 				Z = prefab.transform.Z,
 			};
-			return Instantiate(newT, prefab.components.Clone(), prefab.body, guid ?? Guid.NewGuid(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children.Clone());
+			return Instantiate(newT, prefab.components.Clone(), prefab.body, guid ?? Guid.NewGuid(), prefab.customData, prefab.isStatic, prefab.dontDestroyOnLoad, prefab.transform.Children);
 		}
 
 		/// <summary>

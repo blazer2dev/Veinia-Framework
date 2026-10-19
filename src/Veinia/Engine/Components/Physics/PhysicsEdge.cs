@@ -28,6 +28,14 @@ namespace VeiniaFramework
 			this.category = category;
 		}
 
+		public override object Clone()
+		{
+			var clone = (PhysicsEdge)base.Clone();
+			clone.shape = null;
+			clone.fixture = null;
+			return clone;
+		}
+
 		protected override void MakeShape()
 		{
 			shape = new EdgeShape(point1 + offset, point2 + offset);

@@ -140,6 +140,17 @@ namespace VeiniaFramework
 		}
 		public Transform() { }
 
+		public override object Clone()
+		{
+			var clone = (Transform)base.Clone();
+			clone.Parent = null;
+			clone.Children = new List<Transform>();
+			clone.gameObject = null;
+			clone.transform = null;
+			clone.level = null;
+			return clone;
+		}
+
 		public static Vector2 WorldToScreenPos(Vector2 world)
 		{
 			var unflippedScreen = world * unitSize;

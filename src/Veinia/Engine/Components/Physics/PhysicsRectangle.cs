@@ -32,6 +32,14 @@ namespace VeiniaFramework
 			this.category = category;
 		}
 
+		public override object Clone()
+		{
+			var clone = (PhysicsRectangle)base.Clone();
+			clone.shape = null;
+			clone.fixture = null;
+			return clone;
+		}
+
 		public override void Update()
 		{
 			if (transform.scale != oldScale)

@@ -58,6 +58,17 @@ namespace VeiniaFramework
 			}
 		}
 
+		public override object Clone()
+		{
+			var clone = (Trail)base.Clone();
+			clone._vBuffer = null;
+			clone._iBuffer = null;
+			clone.vertices = null;
+			clone._segmentsUsed = 0;
+			clone._lastSegmentPosition = Vector3.Zero;
+			return clone;
+		}
+
 		public override void Initialize()
 		{
 			// _lastSegmentPosition = Globals.input.GetMouseScreenPosition().ToVector3();
@@ -89,8 +100,8 @@ namespace VeiniaFramework
 
 		public void Dispose()
 		{
-			_vBuffer.Dispose();
-			_iBuffer.Dispose();
+			_vBuffer?.Dispose();
+			_iBuffer?.Dispose();
 		}
 
 		public override void Update()

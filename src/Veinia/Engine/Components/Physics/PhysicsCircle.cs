@@ -26,6 +26,14 @@ namespace VeiniaFramework
 			this.category = category;
 		}
 
+		public override object Clone()
+		{
+			var clone = (PhysicsCircle)base.Clone();
+			clone.shape = null;
+			clone.fixture = null;
+			return clone;
+		}
+
 		protected override void MakeShape()
 		{
 			var circleShape = new CircleShape(radius, 1f);

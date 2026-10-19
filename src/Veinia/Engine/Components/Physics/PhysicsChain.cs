@@ -42,6 +42,15 @@ namespace VeiniaFramework
 			this.category = category;
 		}
 
+		public override object Clone()
+		{
+			var clone = (PhysicsChain)base.Clone();
+			clone.verts = verts == null ? null : (Vector2[])verts.Clone();
+			clone.shape = null;
+			clone.fixture = null;
+			return clone;
+		}
+
 		protected override void MakeShape()
 		{
 			var v = new Vertices(vertices);
