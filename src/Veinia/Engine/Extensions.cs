@@ -168,14 +168,14 @@ namespace VeiniaFramework
 		[UnsupportedOSPlatform("browser")]
 		public static Dictionary<string, T1> LoadAll<T1>(this ContentManager content, string contentFolder)
 		{
-			DirectoryInfo dir = new DirectoryInfo(Path.Combine(content.RootDirectory, contentFolder));
+			DirectoryInfo dir = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, content.RootDirectory, contentFolder));
 
 			if (!dir.Exists)
 				throw new DirectoryNotFoundException($"LoadAll({dir}) doesn't exist. Check spelling and make sure the content folder is in the project directory.");
 
 			Dictionary<string, T1> result = new();
 
-			FileInfo[] files = dir.GetFiles("*.*");
+			FileInfo[] files = dir.GetFiles("*.xnb");
 			foreach (FileInfo file in files)
 			{
 				string key = Path.GetFileNameWithoutExtension(file.Name);

@@ -52,6 +52,8 @@ namespace VeiniaFramework
         {
             var loadPath = string.IsNullOrWhiteSpace(path) ? fileName : Path.Combine(path, fileName);
             if (appdataFolder) loadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), loadPath);
+            else if (!OperatingSystem.IsBrowser() && !Path.IsPathRooted(loadPath))
+                loadPath = Path.Combine(AppContext.BaseDirectory, loadPath);
 
             object dataToLoad;
 
