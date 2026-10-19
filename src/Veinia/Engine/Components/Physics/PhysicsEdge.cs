@@ -13,8 +13,10 @@ namespace VeiniaFramework
 		bool isSensor;
 		Category category;
 
+		[ResetOnInstantiate]
 		private Shape shape;
 
+		[ResetOnInstantiate]
 		private Fixture fixture;
 
 		public PhysicsEdge(Vector2 point1, Vector2 point2, float restitution = 0, float friction = .2f, bool isSensor = false, Category category = Category.None, BodyType bodyType = BodyType.Static, Vector2 offset = default, object tag = null, bool ignoreGravity = false, bool sleepingAllowed = true)
@@ -26,14 +28,6 @@ namespace VeiniaFramework
 			this.friction = friction;
 			this.isSensor = isSensor;
 			this.category = category;
-		}
-
-		public override object Clone()
-		{
-			var clone = (PhysicsEdge)base.Clone();
-			clone.shape = null;
-			clone.fixture = null;
-			return clone;
 		}
 
 		protected override void MakeShape()

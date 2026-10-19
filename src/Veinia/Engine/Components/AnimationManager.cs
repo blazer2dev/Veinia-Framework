@@ -5,9 +5,12 @@ namespace VeiniaFramework
 {
 	public class AnimationManager : Component
 	{
+		[CloneOnInstantiate]
 		List<AnimData> animDatas;
+		[ResetOnInstantiate]
 		Sprite sprite;
 
+		[ResetOnInstantiate]
 		AnimData anim; // currentAnim
 		float time;
 
@@ -26,48 +29,6 @@ namespace VeiniaFramework
 			this.tileX = tileX;
 			this.tileY = tileY;
 			this.defaultTimeBetweenFrames = timeBetweenFrames;
-		}
-
-		public override object Clone()
-		{
-			var clone = (AnimationManager)base.Clone();
-			clone.animDatas = null;
-
-			if (animDatas != null)
-			{
-				clone.animDatas = new List<AnimData>(animDatas.Count);
-
-				for (int i = 0; i < animDatas.Count; i++)
-				{
-					var source = animDatas[i];
-					if (source == null)
-					{
-						clone.animDatas.Add(null);
-						continue;
-					}
-
-					clone.animDatas.Add(new AnimData
-					{
-						sourceRectangles = source.sourceRectangles == null ? null : new List<Rectangle>(source.sourceRectangles),
-						name = source.name,
-						stop = source.stop,
-						atlasRow = source.atlasRow,
-						frame = source.frame,
-						timeBetweenFrames = source.timeBetweenFrames,
-					});
-				}
-			}
-
-			clone.sprite = null;
-			clone.anim = null;
-			if (anim != null && animDatas != null && clone.animDatas != null)
-			{
-				var animIndex = animDatas.IndexOf(anim);
-				if (animIndex >= 0 && animIndex < clone.animDatas.Count)
-					clone.anim = clone.animDatas[animIndex];
-			}
-
-			return clone;
 		}
 
 		public override void EarlyInitialize()
@@ -150,6 +111,7 @@ namespace VeiniaFramework
 
 	public class AnimData
 	{
+		[CloneOnInstantiate]
 		public List<Rectangle> sourceRectangles = new List<Rectangle>();
 		public string name;
 		public bool stop;

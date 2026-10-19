@@ -12,8 +12,10 @@ namespace VeiniaFramework
 		bool isSensor;
 		Category category;
 
+		[ResetOnInstantiate]
 		private Shape shape;
 
+		[ResetOnInstantiate]
 		private Fixture fixture;
 
 		public PhysicsCircle(float radius = 1, float friction = .2f, float restitution = 0, bool isSensor = false, Category category = Category.None, BodyType bodyType = BodyType.Static, Vector2 offset = default, object tag = null, bool ignoreGravity = false, bool sleepingAllowed = true)
@@ -24,14 +26,6 @@ namespace VeiniaFramework
 			this.restitution = restitution;
 			this.isSensor = isSensor;
 			this.category = category;
-		}
-
-		public override object Clone()
-		{
-			var clone = (PhysicsCircle)base.Clone();
-			clone.shape = null;
-			clone.fixture = null;
-			return clone;
 		}
 
 		protected override void MakeShape()

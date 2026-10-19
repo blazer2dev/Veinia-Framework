@@ -21,6 +21,7 @@ namespace VeiniaFramework
 				}
 			}
 		}
+		[CloneOnInstantiate]
 		private Vector2[] verts;
 
 		float friction;
@@ -28,8 +29,10 @@ namespace VeiniaFramework
 		bool isSensor;
 		Category category;
 
+		[ResetOnInstantiate]
 		private Shape shape;
 
+		[ResetOnInstantiate]
 		private Fixture fixture;
 
 		public PhysicsChain(Vector2[] vertices, float restitution = 0, float friction = .2f, bool isSensor = false, Category category = Category.None, BodyType bodyType = BodyType.Static, Vector2 offset = default, object tag = null, bool ignoreGravity = false, bool sleepingAllowed = true)
@@ -40,15 +43,6 @@ namespace VeiniaFramework
 			this.friction = friction;
 			this.isSensor = isSensor;
 			this.category = category;
-		}
-
-		public override object Clone()
-		{
-			var clone = (PhysicsChain)base.Clone();
-			clone.verts = verts == null ? null : (Vector2[])verts.Clone();
-			clone.shape = null;
-			clone.fixture = null;
-			return clone;
 		}
 
 		protected override void MakeShape()

@@ -17,8 +17,10 @@ namespace VeiniaFramework
 
 		private Vector2 oldScale;
 
+		[ResetOnInstantiate]
 		private Shape shape;
 
+		[ResetOnInstantiate]
 		private Fixture fixture;
 
 		public PhysicsRectangle(float width = 1, float height = 1, float friction = .2f, float restitution = 0, bool isSensor = false, Category category = Category.None, BodyType bodyType = BodyType.Static, Vector2 offset = default, object tag = null, bool ignoreGravity = false, bool sleepingAllowed = true)
@@ -30,14 +32,6 @@ namespace VeiniaFramework
 			this.restitution = restitution;
 			this.isSensor = isSensor;
 			this.category = category;
-		}
-
-		public override object Clone()
-		{
-			var clone = (PhysicsRectangle)base.Clone();
-			clone.shape = null;
-			clone.fixture = null;
-			return clone;
 		}
 
 		public override void Update()

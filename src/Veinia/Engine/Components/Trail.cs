@@ -8,12 +8,16 @@ namespace VeiniaFramework
 	public class Trail : Component, IDrawn
 	{
 		//our buffers
+		[ResetOnInstantiate]
 		private DynamicVertexBuffer _vBuffer;
+		[ResetOnInstantiate]
 		private IndexBuffer _iBuffer;
 
+		[ResetOnInstantiate]
 		private TrailVertex[] vertices;
 
 		//How many segments are already initialized?
+		[ResetOnInstantiate]
 		private int _segmentsUsed = 0;
 
 		//How many segments does our strip have?
@@ -23,6 +27,7 @@ namespace VeiniaFramework
 		private float _segmentLength;
 
 		//The world coordinates of our last static segment end
+		[ResetOnInstantiate]
 		private Vector3 _lastSegmentPosition;
 
 		//If we fade out – over how many segments?
@@ -56,17 +61,6 @@ namespace VeiniaFramework
 
 				_setWorldViewProjection = true;
 			}
-		}
-
-		public override object Clone()
-		{
-			var clone = (Trail)base.Clone();
-			clone._vBuffer = null;
-			clone._iBuffer = null;
-			clone.vertices = null;
-			clone._segmentsUsed = 0;
-			clone._lastSegmentPosition = Vector3.Zero;
-			return clone;
 		}
 
 		public override void Initialize()
