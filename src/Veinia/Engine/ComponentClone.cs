@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace VeiniaFramework
 {
@@ -12,9 +11,13 @@ namespace VeiniaFramework
 		private static readonly MethodInfo memberwiseClone = typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic);
 		private static readonly ConcurrentDictionary<Type, FieldPlan[]> plans = new ConcurrentDictionary<Type, FieldPlan[]>();
 
-		internal static object Clone(Component source)
+		internal static Component Clone(Component source)
 		{
-			return new CloneContext().CloneComponent(source);
+			var plan = GetPlan(source.GetType());
+
+			if (plan.Length == 0) return source.CloneShallow();
+
+			return new CloneContext().CloneComponent(source, plan);
 		}
 
 		private static FieldPlan[] GetPlan(Type type) => plans.GetOrAdd(type, BuildPlan);
@@ -43,7 +46,7 @@ namespace VeiniaFramework
 			return result.ToArray();
 		}
 
-		private sealed class FieldPlan
+		private readonly struct FieldPlan
 		{
 			internal readonly FieldInfo field;
 			internal readonly bool clone;
@@ -59,11 +62,11 @@ namespace VeiniaFramework
 		{
 			private readonly Dictionary<object, object> clones = new Dictionary<object, object>(ReferenceEqualityComparer.Instance);
 
-			internal Component CloneComponent(Component source)
+			internal Component CloneComponent(Component source, FieldPlan[] plan)
 			{
 				var clone = source.CloneShallow();
 				clones[source] = clone;
-				Apply(source, clone);
+				Apply(source, clone, plan);
 				return clone;
 			}
 
@@ -73,13 +76,12 @@ namespace VeiniaFramework
 
 				var clone = memberwiseClone.Invoke(source, null);
 				clones[source] = clone;
-				Apply(source, clone);
+				Apply(source, clone, GetPlan(source.GetType()));
 				return clone;
 			}
 
-			private void Apply(object source, object clone)
+			private void Apply(object source, object clone, FieldPlan[] plan)
 			{
-				var plan = GetPlan(source.GetType());
 				for (int i = 0; i < plan.Length; i++)
 				{
 					var item = plan[i];
@@ -138,13 +140,6 @@ namespace VeiniaFramework
 			}
 
 			private static object DefaultValue(Type type) => type.IsValueType ? Activator.CreateInstance(type) : null;
-		}
-
-		private sealed class ReferenceEqualityComparer : IEqualityComparer<object>
-		{
-			internal static readonly ReferenceEqualityComparer Instance = new ReferenceEqualityComparer();
-			public new bool Equals(object left, object right) => ReferenceEquals(left, right);
-			public int GetHashCode(object value) => RuntimeHelpers.GetHashCode(value);
 		}
 	}
 }
