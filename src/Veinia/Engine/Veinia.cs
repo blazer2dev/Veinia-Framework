@@ -135,7 +135,7 @@ namespace VeiniaFramework
 
 		public void ToggleEditor(Level level = null)
 		{
-#if RELEASE
+#if !DEBUG
 			if (!EditorScene.AllowEditorInRelease) return;
 #endif
 
