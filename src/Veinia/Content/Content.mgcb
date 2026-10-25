@@ -13,8 +13,8 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin veinia_defaults/arial_rounded.TTF
-/copy:veinia_defaults/arial_rounded.TTF
+#begin veinia_defaults/arial_rounded.ttf
+/copy:veinia_defaults/arial_rounded.ttf
 
 #begin veinia_defaults/circle.png
 /importer:TextureImporter

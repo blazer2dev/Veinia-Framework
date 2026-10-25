@@ -49,10 +49,8 @@ namespace VeiniaFramework
 			Globals.shapeDrawing = new ShapeDrawing(graphicsDevice);
 			Globals.frustumCulling = new FrustumCulling();
 
-
-			using var stream = TitleContainer.OpenStream(Path.Combine(content.RootDirectory, "veinia_defaults/arial_rounded.ttf"));
+			using var stream = TitleContainer.OpenStream(Path.Combine(content.RootDirectory, "veinia_defaults", "arial_rounded.ttf"));
 			Globals.fontSystem.AddFont(stream);
-
 
 			window.ClientSizeChanged += (s, a) => screen.ClientSizeChanged();
 
